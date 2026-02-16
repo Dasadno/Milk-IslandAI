@@ -20,14 +20,45 @@ export const HomePage = () => {
 
       {/* --- Header / Nav --- */}
     <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 backdrop-blur-xl bg-deep-midnight/40 border border-white/10 rounded-2xl px-8 py-4 flex justify-between items-center shadow-2xl">
-        <div className="text-xl font-bold bg-gradient-accent bg-clip-text text-transparent tracking-tighter uppercase text-white">
-        MindFlow
+        <div className="flex items-center gap-4 cursor-pointer select-none group">
+            {/* <img 
+            src="./assets/cover.png" 
+            alt="MindFlow Logo" 
+            className="w-10 h-10 rounded-full object-cover border border-white/10 shadow-[0_0_10px_rgba(38,208,206,0.5)] group-hover:shadow-[0_0_20px_rgba(38,208,206,0.8)] transition-all duration-300"
+            /> */}
+
+            <div className="text-xl font-bold bg-gradient-accent bg-clip-text text-transparent tracking-tighter uppercase text-white">
+            MindFlow
+            </div>
         </div>
-        <div className="hidden md:flex space-x-8 text-sm font-medium tracking-wide">
-        <a href="#about" className="hover:text-bright-turquoise transition-all">Кто мы?</a>
-        <a href="#mission" className="hover:text-bright-turquoise transition-all">Миссия</a>
-        <a href="https://github.com/Dasadno/Milk-IslandAI" target="_blank" className="hover:text-bright-turquoise transition-all">GitHub</a>
-        </div>
+
+        <div className="hidden md:flex space-x-1"> {/* space-x-1 вместо 8, отступы внутри ссылок */}
+        {/* Ссылка 1 */}
+        <a href="#about" className="group relative px-4 py-2 overflow-hidden rounded-lg transition-all hover:bg-white/5">
+            <span className="relative z-10 transition-all duration-300 group-hover:text-bright-turquoise group-hover:drop-shadow-[0_0_10px_rgba(38,208,206,0.8)]">
+                Кто мы?
+            </span>
+            {/* Градиентная линия снизу */}
+            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-bright-turquoise to-transparent transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
+        </a>
+
+        {/* Ссылка 2 */}
+        <a href="#mission" className="group relative px-4 py-2 overflow-hidden rounded-lg transition-all hover:bg-white/5">
+            <span className="relative z-10 transition-all duration-300 group-hover:text-bright-turquoise group-hover:drop-shadow-[0_0_10px_rgba(38,208,206,0.8)]">
+                Миссия
+            </span>
+            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-bright-turquoise to-transparent transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
+        </a>
+
+        {/* Ссылка 3 */}
+        <a href="https://github.com/Dasadno/Milk-IslandAI" target="_blank" className="group relative px-4 py-2 overflow-hidden rounded-lg transition-all hover:bg-white/5">
+            <span className="relative z-10 transition-all duration-300 group-hover:text-bright-turquoise group-hover:drop-shadow-[0_0_10px_rgba(38,208,206,0.8)]">
+                GitHub
+            </span>
+            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-bright-turquoise to-transparent transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
+        </a>
+
+    </div>
         {/* Кнопка теперь яркая и заметная */}
         <button className="bg-gradient-accent text-white px-6 py-2.5 rounded-xl text-sm font-black hover:shadow-[0_0_25px_rgba(122,248,196,0.6)] hover:scale-105 transition-all active:scale-95 border border-white/20 shadow-[...rgba(122,248,196,0.4)]">
         Запустить поток
