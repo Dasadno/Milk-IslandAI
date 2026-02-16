@@ -1,53 +1,40 @@
-// Package api provides middleware for the AI Agent Society HTTP server.
+// Package api provides middleware and error types for the HTTP server.
 //
-// =============================================================================
-// PURPOSE:
-// =============================================================================
-// This file contains HTTP middleware functions for cross-cutting concerns
-// like logging, authentication, rate limiting, and request tracking.
-//
-// =============================================================================
-// MIDDLEWARE IMPLEMENTATIONS:
-// =============================================================================
-//
-// func RequestIDMiddleware() gin.HandlerFunc
-//   - Generate unique request ID for each incoming request
-//   - Add to context and response headers (X-Request-ID)
-//   - Enable request tracing across logs
-//
-// func LoggerMiddleware(logger *slog.Logger) gin.HandlerFunc
-//   - Log request method, path, status code, latency
-//   - Include request ID for correlation
-//   - Log request body for POST/PUT (with size limits)
-//
-// func CORSMiddleware() gin.HandlerFunc
-//   - Allow cross-origin requests from dashboard frontend
-//   - Configure allowed methods: GET, POST, PUT, DELETE, OPTIONS
-//   - Configure allowed headers: Content-Type, Authorization
-//
-// func RateLimitMiddleware(rps int) gin.HandlerFunc
-//   - Protect API from abuse
-//   - Token bucket algorithm per IP address
-//   - Return 429 Too Many Requests when exceeded
-//
-// func RecoveryMiddleware(logger *slog.Logger) gin.HandlerFunc
-//   - Catch panics in handlers
-//   - Log stack trace with request context
-//   - Return 500 Internal Server Error
-//
-// =============================================================================
-// ERROR HANDLING:
-// =============================================================================
-//
-// type APIError struct {
-//     Code    string `json:"code"`
-//     Message string `json:"message"`
-//     Details any    `json:"details,omitempty"`
-// }
-//
-// func ErrorHandler() gin.HandlerFunc
-//   - Centralized error response formatting
-//   - Map internal errors to appropriate HTTP status codes
-//   - Sanitize error messages for production (hide internal details)
+// Middleware-функции обрабатывают cross-cutting concerns:
+// логирование, CORS, rate limiting, recovery от паник, трассировка запросов.
 
 package api
+
+// -----------------------------------------------------------------------------
+// APIError — стандартизированная ошибка API
+// -----------------------------------------------------------------------------
+// Все ошибки API возвращаются в этом формате. ErrorHandler middleware
+// перехватывает внутренние ошибки и оборачивает их в APIError,
+// скрывая детали реализации в production-режиме.
+
+type APIError struct {
+	// Code — машино-читаемый код ошибки ("AGENT_NOT_FOUND", "BAD_REQUEST").
+	// Фронтенд использует для i18n и специфичной обработки.
+	Code string `json:"code"`
+
+	// Message — человеко-читаемое описание ошибки.
+	Message string `json:"message"`
+
+	// Details — опциональные детали (валидационные ошибки, debug info).
+	// В production — nil, в development — стек-трейс и контекст.
+	Details any `json:"details,omitempty"`
+}
+
+// Error реализует интерфейс error для удобства использования в Go-коде.
+func (e *APIError) Error() string {
+	return e.Message
+}
+
+// Предопределённые коды ошибок.
+const (
+	ErrCodeBadRequest     = "BAD_REQUEST"      // 400 — невалидный JSON, отсутствуют поля
+	ErrCodeNotFound       = "NOT_FOUND"        // 404 — агент/событие/связь не найдены
+	ErrCodeConflict       = "CONFLICT"         // 409 — дублирование (например, связь уже есть)
+	ErrCodeRateLimited    = "RATE_LIMITED"      // 429 — превышен лимит запросов
+	ErrCodeInternalError  = "INTERNAL_ERROR"    // 500 — внутренняя ошибка сервера
+)

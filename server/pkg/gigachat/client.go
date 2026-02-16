@@ -1,139 +1,157 @@
 // Package gigachat provides a client for the GigaChat LLM API via Ollama.
 //
-// =============================================================================
-// PURPOSE:
-// =============================================================================
-// This package encapsulates all communication with the GigaChat language model.
-// It can operate in two modes:
-//   1. Via Ollama — local inference server (recommended for hackathon)
-//   2. Direct GigaChat API — cloud-based (requires API key)
-//
-// The client provides high-level methods tailored to agent cognition needs:
-// thinking, reflection, conversation, and embedding generation.
-//
-// =============================================================================
-// CLIENT STRUCTURE:
-// =============================================================================
-//
-// type Client struct {
-//     baseURL    string            // Ollama: "http://localhost:11434", GigaChat: API URL
-//     model      string            // Model name: "gigachat" or specific Ollama model
-//     apiKey     string            // Only for direct GigaChat API
-//     httpClient *http.Client
-//     mode       ClientMode        // Ollama or Direct
-//     config     ClientConfig
-// }
-//
-// type ClientMode string
-// const (
-//     ModeOllama   ClientMode = "ollama"   // Local Ollama server
-//     ModeDirect   ClientMode = "direct"   // Direct GigaChat API
-// )
-//
-// type ClientConfig struct {
-//     DefaultTemperature float64       // Base LLM temperature (0.0 - 2.0)
-//     MaxTokens          int           // Max response tokens
-//     Timeout            time.Duration // Request timeout
-//     RetryAttempts      int           // Retry on transient failures
-//     RetryDelay         time.Duration // Delay between retries
-// }
-//
-// =============================================================================
-// CLIENT INITIALIZATION:
-// =============================================================================
-//
-// func NewClient(baseURL, model string, opts ...ClientOption) *Client
-//   - Create client with Ollama endpoint and model name
-//   - Apply functional options for configuration
-//   - Default: temperature 0.7, max tokens 1024, timeout 30s
-//
-// func NewDirectClient(apiURL, apiKey, model string, opts ...ClientOption) *Client
-//   - Create client for direct GigaChat API access
-//   - Handle GigaChat-specific authentication (OAuth token)
-//
-// type ClientOption func(*Client)
-// func WithTemperature(t float64) ClientOption
-// func WithMaxTokens(n int) ClientOption
-// func WithTimeout(d time.Duration) ClientOption
-//
-// =============================================================================
-// CORE LLM OPERATIONS:
-// =============================================================================
-//
-// func (c *Client) Complete(ctx context.Context, req CompletionRequest) (*CompletionResponse, error)
-//   - Send chat completion request to LLM
-//   - Handle Ollama API format: POST /api/chat
-//   - Handle retry logic and timeout
-//   - Return parsed response with token usage stats
-//
-// type CompletionRequest struct {
-//     SystemPrompt string            // Agent personality and role
-//     Messages     []Message         // Conversation history
-//     Temperature  *float64          // Override default temperature
-//     MaxTokens    *int              // Override default max tokens
-//     Stream       bool              // Enable streaming response
-// }
-//
-// type Message struct {
-//     Role    string `json:"role"`    // "system", "user", "assistant"
-//     Content string `json:"content"`
-// }
-//
-// type CompletionResponse struct {
-//     Content    string  // Generated text
-//     TokensUsed int     // Total tokens consumed
-//     Model      string  // Model that responded
-//     Duration   time.Duration
-// }
-//
-// =============================================================================
-// AGENT-SPECIFIC METHODS:
-// =============================================================================
-//
-// func (c *Client) Think(ctx context.Context, personality string, context string, memories []string) (string, error)
-//   - High-level thinking method for agent cognition
-//   - Builds system prompt from personality
-//   - Includes memories and current context
-//   - Returns structured thought output
-//
-// func (c *Client) Converse(ctx context.Context, agent1Prompt string, agent2Prompt string, history []Message) (string, error)
-//   - Generate next dialogue turn in agent conversation
-//   - Consider both agents' contexts
-//
-// func (c *Client) Reflect(ctx context.Context, personality string, memories []string) (string, error)
-//   - Deep reflection prompt for meta-cognition
-//   - Ask LLM to find patterns, insights, goal updates
-//   - Return structured reflection output
-//
-// func (c *Client) Summarize(ctx context.Context, texts []string) (string, error)
-//   - Summarize multiple memory entries into semantic knowledge
-//   - Used by MemoryConsolidator
-//
-// =============================================================================
-// EMBEDDING OPERATIONS:
-// =============================================================================
-//
-// func (c *Client) Embed(ctx context.Context, text string) ([]float32, error)
-//   - Generate vector embedding for text
-//   - Ollama endpoint: POST /api/embeddings
-//   - Used by VectorStore for memory encoding and similarity search
-//
-// func (c *Client) EmbedBatch(ctx context.Context, texts []string) ([][]float32, error)
-//   - Batch embedding generation
-//   - More efficient for bulk operations (initial memory loading)
-//
-// =============================================================================
-// STREAMING SUPPORT:
-// =============================================================================
-//
-// func (c *Client) CompleteStream(ctx context.Context, req CompletionRequest) (<-chan StreamChunk, error)
-//   - Return channel of streaming response chunks
-//   - Used by Brain.StreamThoughts() for real-time dashboard
-//
-// type StreamChunk struct {
-//     Content string // Partial response text
-//     Done    bool   // Is this the final chunk?
-//     Error   error  // Non-nil if stream errored
-// }
+// Клиент инкапсулирует всю коммуникацию с языковой моделью GigaChat.
+// Два режима работы:
+//   1. Ollama — локальный inference (рекомендуется для хакатона)
+//   2. Direct — облачный GigaChat API (нужен API key)
 
 package gigachat
+
+import (
+	"net/http"
+	"time"
+)
+
+// -----------------------------------------------------------------------------
+// Client — клиент для GigaChat/Ollama
+// -----------------------------------------------------------------------------
+// Предоставляет высокоуровневые методы для когнитивных задач агентов:
+//   Think()     — размышление (system prompt + контекст + память → мысли)
+//   Converse()  — генерация реплики диалога
+//   Reflect()   — мета-когнитивная рефлексия
+//   Summarize() — суммаризация воспоминаний для консолидации
+//   Embed()     — генерация эмбеддингов для vector search
+
+type Client struct {
+	// BaseURL — endpoint сервера.
+	// Ollama: "http://localhost:11434"
+	// GigaChat: "https://gigachat.devices.sberbank.ru/api/v1"
+	BaseURL string
+
+	// Model — имя модели для запросов.
+	// Ollama: имя модели в локальном реестре (например, "llama3", "mistral")
+	// GigaChat: "GigaChat", "GigaChat-Pro", "GigaChat-Max"
+	Model string
+
+	// APIKey — ключ авторизации (только для Direct mode).
+	// Для Ollama не используется.
+	APIKey string
+
+	// HTTPClient — HTTP-клиент с настроенными таймаутами.
+	HTTPClient *http.Client
+
+	// Mode — режим работы: Ollama или Direct.
+	Mode ClientMode
+
+	// Config — параметры по умолчанию для запросов.
+	Config ClientConfig
+}
+
+// ClientMode — режим подключения к LLM.
+type ClientMode string
+
+const (
+	// ModeOllama — локальный Ollama сервер. Бесплатно, без ограничений,
+	// но требует запущенный Ollama с загруженной моделью.
+	ModeOllama ClientMode = "ollama"
+
+	// ModeDirect — прямой доступ к GigaChat API Сбера.
+	// Требует API key и OAuth-авторизацию.
+	ModeDirect ClientMode = "direct"
+)
+
+// ClientConfig — конфигурация LLM-клиента.
+type ClientConfig struct {
+	// DefaultTemperature — температура по умолчанию для генерации (0.0–2.0).
+	// Низкая (0.1–0.3) = детерминированные, предсказуемые ответы.
+	// Высокая (0.8–1.5) = креативные, разнообразные ответы.
+	// Для агентов: базово 0.7, модифицируется BrainConfig.CreativityFactor.
+	DefaultTemperature float64
+
+	// MaxTokens — максимальное количество токенов в ответе.
+	// Ограничивает длину генерации. Для Think() обычно 512–1024.
+	MaxTokens int
+
+	// Timeout — таймаут HTTP-запроса к LLM.
+	// Рекомендуется 30s для обычных запросов, 60s для длинных рефлексий.
+	Timeout time.Duration
+
+	// RetryAttempts — количество повторов при transient failures (timeout, 5xx).
+	RetryAttempts int
+
+	// RetryDelay — задержка между повторами.
+	RetryDelay time.Duration
+}
+
+// ClientOption — функциональная опция для настройки клиента.
+type ClientOption func(*Client)
+
+// -----------------------------------------------------------------------------
+// CompletionRequest — запрос к LLM на генерацию текста
+// -----------------------------------------------------------------------------
+// Основной формат запроса. Brain формирует этот объект перед каждым Think().
+
+type CompletionRequest struct {
+	// SystemPrompt — «личность» агента.
+	// Содержит описание характера, ценностей, причуд и формат ответа.
+	// Остаётся стабильным между запросами одного агента.
+	SystemPrompt string
+
+	// Messages — история сообщений (контекст разговора).
+	// Для Think(): один message с контекстом ситуации.
+	// Для Converse(): история диалога (чередование user/assistant).
+	Messages []Message
+
+	// Temperature — переопределение DefaultTemperature для этого запроса.
+	// nil = использовать дефолт из Config.
+	Temperature *float64
+
+	// MaxTokens — переопределение для этого запроса.
+	MaxTokens *int
+
+	// Stream — включить стриминг ответа (для real-time мыслей на дашборде).
+	Stream bool
+}
+
+// Message — одно сообщение в контексте разговора (формат OpenAI/Ollama).
+type Message struct {
+	// Role — роль отправителя: "system", "user", "assistant".
+	// system = системный промпт, user = входной контекст, assistant = ответ LLM.
+	Role string `json:"role"`
+
+	// Content — текст сообщения.
+	Content string `json:"content"`
+}
+
+// CompletionResponse — ответ LLM на запрос генерации.
+type CompletionResponse struct {
+	// Content — сгенерированный текст.
+	Content string
+
+	// TokensUsed — общее количество потреблённых токенов (prompt + completion).
+	// Используется для мониторинга расхода ресурсов.
+	TokensUsed int
+
+	// Model — какая модель ответила (полезно при использовании fallback-моделей).
+	Model string
+
+	// Duration — сколько времени занял запрос.
+	Duration time.Duration
+}
+
+// -----------------------------------------------------------------------------
+// StreamChunk — фрагмент стримингового ответа
+// -----------------------------------------------------------------------------
+// Читается из канала, возвращённого CompleteStream().
+// Brain.StreamThoughts() пробрасывает чанки в SSE-эндпоинт.
+
+type StreamChunk struct {
+	// Content — фрагмент текста (может быть одно слово или часть предложения).
+	Content string
+
+	// Done — финальный чанк (после него канал закрывается).
+	Done bool
+
+	// Error — ошибка стрима. Не-nil = стрим прерван.
+	Error error
+}

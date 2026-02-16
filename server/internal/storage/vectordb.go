@@ -1,119 +1,96 @@
 // Package storage provides the Vector Database layer for episodic memory.
 //
-// =============================================================================
-// PURPOSE:
-// =============================================================================
-// This file wraps the Chromem-go (or custom) vector database used for
-// similarity-based memory retrieval. Episodic memories are stored as vector
-// embeddings, enabling agents to recall experiences based on semantic
-// similarity rather than exact keyword matches.
-//
-// =============================================================================
-// WHY A VECTOR DB:
-// =============================================================================
-// When an agent encounters a situation, it needs to recall RELEVANT past
-// experiences — not just recent ones. Vector similarity search enables:
-//   - "I'm at a party" → recalls all party-related memories
-//   - "Agent X is angry" → recalls past conflicts with Agent X
-//   - "I feel lonely" → recalls times of connection and isolation
-//
-// =============================================================================
-// VECTOR STORE STRUCTURE:
-// =============================================================================
-//
-// type VectorStore struct {
-//     db         *chromem.DB              // Chromem-go instance
-//     collection *chromem.Collection      // One collection per agent
-//     embedder   EmbeddingProvider        // Generates vector embeddings
-// }
-//
-// type EmbeddingProvider interface {
-//     Embed(text string) ([]float32, error)
-//     EmbedBatch(texts []string) ([][]float32, error)
-// }
-//
-// =============================================================================
-// EMBEDDING STRATEGY:
-// =============================================================================
-//
-// Two options for generating embeddings:
-//
-// Option A — GigaChat/Ollama Embeddings:
-//   - Use the LLM's embedding endpoint
-//   - Higher quality, but requires API calls
-//   - Recommended for production
-//
-// Option B — Simple Local Embeddings:
-//   - Bag-of-words or TF-IDF based vectors
-//   - No external dependencies, faster
-//   - Good enough for hackathon / demo
-//
-// type LocalEmbedder struct {
-//     vocabulary map[string]int    // word → dimension index
-//     idfScores  map[string]float64
-//     dimensions int
-// }
-//
-// =============================================================================
-// VECTOR STORE OPERATIONS:
-// =============================================================================
-//
-// func NewVectorStore(dbPath string, embedder EmbeddingProvider) (*VectorStore, error)
-//   - Initialize Chromem-go with persistent storage at dbPath
-//   - Create default collection if not exists
-//
-// func (vs *VectorStore) CreateCollection(agentID string) error
-//   - Create a separate collection per agent
-//   - Enables isolated memory spaces
-//
-// func (vs *VectorStore) AddMemory(agentID string, memory VectorMemory) error
-//   - Generate embedding for memory content
-//   - Store with metadata (timestamp, emotional tag, importance)
-//   - Assign unique document ID
-//
-// func (vs *VectorStore) Search(agentID string, query string, limit int) ([]VectorSearchResult, error)
-//   - Generate embedding for query
-//   - Find top-K most similar memories
-//   - Return with similarity scores
-//   - Filter by agent's collection
-//
-// func (vs *VectorStore) SearchWithFilter(agentID string, query string, filter MemoryFilter, limit int) ([]VectorSearchResult, error)
-//   - Similarity search with additional metadata filters
-//   - Filter by: time range, emotional tag, importance threshold, related agents
-//
-// func (vs *VectorStore) DeleteMemory(agentID string, memoryID string) error
-//   - Remove specific memory from vector store
-//   - Used during memory consolidation (replace episodic with semantic)
-//
-// func (vs *VectorStore) DeleteCollection(agentID string) error
-//   - Remove all memories for an agent
-//   - Used when removing agent from simulation
-//
-// =============================================================================
-// DATA STRUCTURES:
-// =============================================================================
-//
-// type VectorMemory struct {
-//     ID            string
-//     Content       string            // Text to embed
-//     EmotionalTag  string
-//     Importance    float64
-//     Timestamp     time.Time
-//     RelatedAgents []string
-//     Metadata      map[string]string // Chromem metadata (string values only)
-// }
-//
-// type VectorSearchResult struct {
-//     Memory     VectorMemory
-//     Similarity float32           // Cosine similarity score (0-1)
-// }
-//
-// type MemoryFilter struct {
-//     After       *time.Time        // Only memories after this time
-//     Before      *time.Time        // Only memories before this time
-//     MinImportance float64         // Minimum importance threshold
-//     EmotionalTag  string          // Filter by emotion
-//     RelatedAgent  string          // Must involve this agent
-// }
+// Обёртка над Chromem-go (или кастомной реализацией) для similarity-based
+// поиска воспоминаний. Эпизодические воспоминания хранятся как векторные
+// эмбеддинги — агенты вспоминают релевантный опыт, а не просто последний.
 
 package storage
+
+import "time"
+
+// -----------------------------------------------------------------------------
+// VectorStore — хранилище векторных эмбеддингов
+// -----------------------------------------------------------------------------
+// Каждый агент получает отдельную коллекцию (изолированное пространство памяти).
+// При Recall() запрос превращается в эмбеддинг через EmbeddingProvider,
+// затем ищутся ближайшие соседи (cosine similarity) среди воспоминаний агента.
+
+type VectorStore struct {
+	// Embedder — провайдер генерации эмбеддингов.
+	// Может быть GigaChat/Ollama (quality) или LocalEmbedder (speed).
+	Embedder EmbeddingProvider
+
+	// StoragePath — путь к файлу/директории персистентного хранения Chromem-go.
+	StoragePath string
+}
+
+// EmbeddingProvider — интерфейс генерации векторных представлений текста.
+// Две реализации:
+//   1. GigaChat/Ollama — через LLM API (выше качество, нужен сервер)
+//   2. LocalEmbedder — TF-IDF/bag-of-words (быстрее, без зависимостей)
+type EmbeddingProvider interface {
+	// Embed — превращает текст в вектор фиксированной размерности.
+	Embed(text string) ([]float32, error)
+
+	// EmbedBatch — batch-версия для массовых операций (начальная загрузка).
+	EmbedBatch(texts []string) ([][]float32, error)
+}
+
+// -----------------------------------------------------------------------------
+// VectorMemory — воспоминание в формате vector store
+// -----------------------------------------------------------------------------
+// Отличается от MemoryRecord тем, что Content уже имеет эмбеддинг
+// и metadata в формате string→string (ограничение Chromem-go).
+
+type VectorMemory struct {
+	// ID — уникальный идентификатор (совпадает с MemoryRecord.ID).
+	ID string
+
+	// Content — текст воспоминания, по которому строится эмбеддинг.
+	Content string
+
+	// EmotionalTag — эмоция в момент формирования (используется как фильтр).
+	EmotionalTag string
+
+	// Importance — значимость 0.0–1.0 (используется для порогового фильтра).
+	Importance float64
+
+	// Timestamp — когда воспоминание было сформировано.
+	Timestamp time.Time
+
+	// RelatedAgents — ID агентов-участников.
+	RelatedAgents []string
+
+	// Metadata — дополнительные данные в формате string→string.
+	// Chromem-go принимает только string-значения в metadata.
+	Metadata map[string]string
+}
+
+// VectorSearchResult — результат similarity search.
+type VectorSearchResult struct {
+	// Memory — найденное воспоминание.
+	Memory VectorMemory
+
+	// Similarity — cosine similarity score от 0.0 (не похоже) до 1.0 (идентично).
+	// Используется как один из факторов ранжирования при Recall.
+	Similarity float32
+}
+
+// MemoryFilter — фильтры для SearchWithFilter().
+// Все поля опциональны — nil/zero = не фильтровать.
+type MemoryFilter struct {
+	// After — только воспоминания после этого времени.
+	After *time.Time
+
+	// Before — только воспоминания до этого времени.
+	Before *time.Time
+
+	// MinImportance — минимальный порог важности.
+	MinImportance float64
+
+	// EmotionalTag — фильтр по эмоции ("joy", "fear").
+	EmotionalTag string
+
+	// RelatedAgent — должен содержать этого агента в RelatedAgents.
+	RelatedAgent string
+}
