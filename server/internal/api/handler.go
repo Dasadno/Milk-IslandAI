@@ -5,10 +5,10 @@ import "milk/server/internal/storage"
 
 // Handler — HTTP-обработчики с доступом к хранилищу.
 type Handler struct {
-    repo *storage.Repository
+	repo *storage.Repository
 }
 
 // NewHandler создаёт Handler с инъекцией зависимости Repository.
 func NewHandler(repo *storage.Repository) *Handler {
-    return &Handler{repo: repo}
+	return &Handler{repo: repo}
 }
