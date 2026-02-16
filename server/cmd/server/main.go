@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/rs/cors"
-	"milk/server/cmd/server/middleware"
 	"milk/server/data"
 	"milk/server/internal/api"
 	"milk/server/internal/storage"
+
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 	repo := storage.NewRepository(data.Db)
 	handler := api.NewHandler(repo)
 
-	mux := middleware.NewMux(handler)
+	mux := api.NewMux(handler)
 
 	h := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:5173"},
