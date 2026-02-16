@@ -20,7 +20,7 @@ export const HomePage = () => {
 
       {/* --- Header / Nav --- */}
     <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 backdrop-blur-xl bg-deep-midnight/40 border border-white/10 rounded-2xl px-8 py-4 flex justify-between items-center shadow-2xl">
-        <div className="text-xl font-bold bg-gradient-accent bg-clip-text text-transparent tracking-tighter uppercase">
+        <div className="text-xl font-bold bg-gradient-accent bg-clip-text text-transparent tracking-tighter uppercase text-white">
         MindFlow
         </div>
         <div className="hidden md:flex space-x-8 text-sm font-medium tracking-wide">
@@ -29,7 +29,7 @@ export const HomePage = () => {
         <a href="https://github.com/Dasadno/Milk-IslandAI" target="_blank" className="hover:text-bright-turquoise transition-all">GitHub</a>
         </div>
         {/* Кнопка теперь яркая и заметная */}
-        <button className="bg-gradient-accent text-white px-6 py-2.5 rounded-xl text-sm font-black hover:shadow-[0_0_25px_rgba(122,248,196,0.6)] hover:scale-105 transition-all active:scale-95">
+        <button className="bg-gradient-accent text-white px-6 py-2.5 rounded-xl text-sm font-black hover:shadow-[0_0_25px_rgba(122,248,196,0.6)] hover:scale-105 transition-all active:scale-95 border border-white/20 shadow-[...rgba(122,248,196,0.4)]">
         Запустить поток
         </button>
     </nav>
@@ -49,7 +49,7 @@ export const HomePage = () => {
         
         <div className="flex flex-wrap justify-center gap-6">
             {/* Кнопка теперь с мощным градиентом и тенью */}
-            <button className="bg-gradient-primary text-white px-12 py-5 rounded-2xl font-black text-xl shadow-[0_10px_40px_rgba(38,208,206,0.4)] hover:shadow-[0_15px_50px_rgba(38,208,206,0.6)] hover:-translate-y-1 transition-all">
+            <button className="bg-gradient-primary text-white px-12 py-5 rounded-2xl font-black text-xl shadow-[0_10px_40px_rgba(38,208,206,0.4)] hover:shadow-[0_15px_50px_rgba(38,208,206,0.6)] hover:-translate-y-1 transition-all border border-white/20 shadow-[...rgba(122,248,196,0.4)]">
             Начать исследование
             </button>
         </div>
@@ -116,8 +116,8 @@ export const HomePage = () => {
         </div>
 
           {/* Блок с репозиторием (Акцентный) */}
-        <div className="md:col-span-1 group rounded-[2.5rem] bg-gradient-primary p-8 flex flex-col justify-between shadow-lg hover:shadow-[0_0_30px_rgba(38,208,206,0.3)] transition-all">
-            <h3 className="font-black text-white text-xl leading-tight">OPEN SOURCE CODE</h3>
+        <div className="md:col-span-1 group rounded-[2.5rem] bg-gradient-primary p-8 flex flex-col justify-between shadow-lg hover:shadow-[0_0_30px_rgba(38,208,206,0.3)] transition-all border border-white/20 shadow-[...rgba(122,248,196,0.4)]">
+            <h3 className="font-black text-white text-xl leading-tight ">OPEN SOURCE CODE</h3>
             <a 
             href="https://github.com/Dasadno/Milk-IslandAI" 
             target="_blank"
@@ -142,7 +142,7 @@ export const HomePage = () => {
             <a 
             href="https://github.com/Dasadno/Milk-IslandAI"
             target="_blank"
-            className="inline-block bg-gradient-accent text-white px-12 py-5 rounded-2xl font-black text-xl shadow-xl hover:shadow-[0_0_30px_rgba(122,248,196,0.4)] hover:-translate-y-1 transition-all"
+            className="inline-block bg-gradient-accent text-white px-12 py-5 rounded-2xl font-black text-xl shadow-xl hover:shadow-[0_0_30px_rgba(122,248,196,0.4)] hover:-translate-y-1 transition-all border border-white/20 shadow-[...rgba(122,248,196,0.4)]"
             >
             Внести вклад в GitHub
             </a>
