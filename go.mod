@@ -1,4 +1,4 @@
-module github.com/einstein-islandai/ai-agent-society
+module milk
 
 go 1.24.1
 
