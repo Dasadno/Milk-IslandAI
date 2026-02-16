@@ -5,14 +5,13 @@ import (
 	"net/http"
 	"time"
 
-	"milk/server/internal/storage"
-
 	"github.com/google/uuid"
+	"milk/server/internal/storage"
 )
 
 // SpawnAgent — POST /control/spawn
 func (h *Handler) SpawnAgent(w http.ResponseWriter, r *http.Request) {
-	var req storage.SpawnAgentRequest
+	var req SpawnAgentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, ErrCodeBadRequest, "invalid JSON body")
 		return

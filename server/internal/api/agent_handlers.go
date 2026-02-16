@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"milk/server/internal/agent"
 	"milk/server/internal/storage"
 	"net/http"
 	"strconv"
@@ -30,7 +29,7 @@ func (h *Handler) ListAgents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	summaries := make([]agent.AgentSummary, 0, len(records))
+	summaries := make([]AgentSummary, 0, len(records))
 	for _, rec := range records {
 		summaries = append(summaries, recordToSummary(rec))
 	}
@@ -72,23 +71,29 @@ func (h *Handler) GetAgent(w http.ResponseWriter, r *http.Request) {
 	mood := parseMood(rec.MoodState.String)
 	goals := parseGoals(rec.Goals.String)
 
-	detail := agent.Agent{
+	detail := AgentDetailResponse{
 		ID:          rec.ID,
 		Name:        rec.Name,
-		Personality: &personality,
+		Personality: personality,
+		CurrentMood: mood,
 		Goals:       goals,
+		Stats: AgentStatsDTO{
+			TotalInteractions:  interactions,
+			MemoriesCount:      memories,
+			RelationshipsCount: relations,
+			DaysSinceCreation:  days,
+		},
 		CreatedAt: rec.CreatedAt,
-		IsActive: rec.IsActive
 	}
 	writeJSON(w, http.StatusOK, detail)
 }
 
 // ── Вспомогательные функции ──────────────────────────────────────────────────
 
-func recordToSummary(rec storage.AgentRecord) agent.AgentSummary {
+func recordToSummary(rec storage.AgentRecord) AgentSummary {
 	mood, intensity := moodFromJSON(rec.MoodState.String)
 	personality := parsePersonality(rec.Personality)
-	return agent.AgentSummary{
+	return AgentSummary{
 		ID:              rec.ID,
 		Name:            rec.Name,
 		PersonalityType: personalityType(personality),
@@ -98,7 +103,7 @@ func recordToSummary(rec storage.AgentRecord) agent.AgentSummary {
 	}
 }
 
-func personalityType(p agent.Personality) string {
+func personalityType(p PersonalityDTO) string {
 	if p.Openness > 0.7 {
 		return "explorer"
 	}
@@ -133,8 +138,8 @@ func moodFromJSON(moodJSON string) (string, float64) {
 	return label, intensity
 }
 
-func parsePersonality(raw string) agent.Personality {
-	var p agent.Personality
+func parsePersonality(raw string) PersonalityDTO {
+	var p PersonalityDTO
 	if raw == "" {
 		return p
 	}
@@ -142,26 +147,26 @@ func parsePersonality(raw string) agent.Personality {
 	return p
 }
 
-func parseMood(raw string) agent.Mood {
+func parseMood(raw string) MoodDTO {
 	if raw == "" {
-		return "neutral"
+		return MoodDTO{Label: "neutral"}
 	}
-	var m agent.Mood
+	var m MoodDTO
 	_ = json.Unmarshal([]byte(raw), &m)
-	if m == "" {
-		m = "neutral"
+	if m.Label == "" {
+		m.Label = "neutral"
 	}
 	return m
 }
 
-func parseGoals(raw string) []agent.Goal {
+func parseGoals(raw string) []GoalDTO {
 	if raw == "" {
-		return []agent.Goal{}
+		return []GoalDTO{}
 	}
-	var goals []agent.Goal
+	var goals []GoalDTO
 	_ = json.Unmarshal([]byte(raw), &goals)
 	if goals == nil {
-		return []agent.Goal{}
+		return []GoalDTO{}
 	}
 	return goals
 }
