@@ -231,7 +231,6 @@ type EventFilter struct {
 	Limit int
 }
 
-
 // NewRepository создаёт Repository поверх существующего *sql.DB.
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{DB: db}
@@ -348,6 +347,56 @@ func (r *Repository) CountMemoriesByAgent(agentID string) (int, error) {
 		return 0, fmt.Errorf("CountMemoriesByAgent: %w", err)
 	}
 	return count, nil
+}
+
+// MemoriesByAgent возвращает массив воспоминаний агента
+func (r *Repository) MemoriesByAgent(agentId string, agentType string, limit int) ([]*MemoryRecord, error) {
+	query := `
+        SELECT 
+            id, agent_id, type, content, emotional_tag, 
+            importance, access_count, last_accessed, 
+            related_agents, metadata, created_at 
+        FROM memories 
+        WHERE agent_id = $1 AND type = $2
+		ORDER BY created_at DESC
+		LIMIT $3`
+
+	rows, err := r.DB.Query(query, agentId, agentType, limit)
+	if err != nil {
+		return nil, fmt.Errorf("database query error: %w", err)
+	}
+	defer rows.Close()
+
+	var mem []*MemoryRecord
+
+	for rows.Next() {
+		m := new(MemoryRecord)
+
+		err := rows.Scan(
+			&m.ID,
+			&m.AgentID,
+			&m.Type,
+			&m.Content,
+			&m.EmotionalTag,
+			&m.Importance,
+			&m.AccessCount,
+			&m.LastAccessed,
+			&m.RelatedAgents,
+			&m.Metadata,
+			&m.CreatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("row scan error: %w", err)
+		}
+
+		mem = append(mem, m)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return mem, nil
 }
 
 // CountRelationshipsByAgent возвращает количество связей агента.
