@@ -352,7 +352,7 @@ func (r *Repository) CountMemoriesByAgent(agentID string) (int, error) {
 }
 
 // MemoriesByAgent возвращает воспоминания агента
-func (r *Repository) MemoriesByAgent(agentId string, memType string, limit int) ([]*MemoryRecord, error)
+// func (r *Repository) MemoriesByAgent(agentId string, memType string, limit int) ([]*MemoryRecord, error)
 
 // CountRelationshipsByAgent возвращает количество связей агента.
 func (r *Repository) CountRelationshipsByAgent(agentID string) (int, error) {
