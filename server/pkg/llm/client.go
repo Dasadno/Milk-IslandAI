@@ -98,7 +98,7 @@ func NewClient() *Client {
 		},
 		Config: ClientConfig{
 			DefaultTemperature: 0.7,
-			MaxTokens:          512,
+			MaxTokens:          5500,
 			Timeout:            5 * time.Minute,
 		},
 	}
