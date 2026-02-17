@@ -241,7 +241,7 @@ Base URL: `http://localhost:8080` (no `/api/v1` prefix — routes are at root le
 
 ### How requests should look 
 
-*Create new agent /control/spawn*
+*Create new agent* `/control/spawn`
 ```json 
 {
   "name": "Mark",
