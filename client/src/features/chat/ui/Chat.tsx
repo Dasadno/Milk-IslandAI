@@ -102,7 +102,7 @@
 
 
 import { useState, useEffect } from 'react';
-import { Menu, X, Send, MoreVertical } from 'lucide-react';
+import { Menu, X, Send, MoreVertical, Plus } from 'lucide-react'; // Добавил Plus
 import { useChatStore } from '../model/store';
 import { ChatSidebar, MessageList } from '../../../widgets';
 import { Button } from '@/shared/ui/Button';
@@ -142,11 +142,11 @@ export const Chat = () => {
     return (
         <div className="flex h-screen overflow-hidden bg-deep-midnight relative selection:bg-bright-turquoise/30 selection:text-white font-sans">
             
-            {/* --- Advanced Animations & Global Styles --- */}
+            {/* --- Расширенные анимации и стили --- */}
             <style>{`
                 @keyframes float {
-                    0%, 100% { transform: translateY(0px) opacity: 0.3; }
-                    50% { transform: translateY(-20px) opacity: 0.6; }
+                    0%, 100% { transform: translateY(0px); opacity: 0.3; }
+                    50% { transform: translateY(-20px); opacity: 0.6; }
                 }
                 @keyframes slideUp {
                     from { opacity: 0; transform: translateY(10px); }
@@ -160,42 +160,55 @@ export const Chat = () => {
                     background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
                     backdrop-filter: blur(20px);
                 }
+
+                .sidebar-block-transition {
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
             `}</style>
 
-            {/* Фоновый градиентный ландшафт */}
+            {/* Фоновые градиенты */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-5%] w-[50%] h-[50%] bg-bright-turquoise/10 blur-[140px] rounded-full animate-pulse" />
                 <div className="absolute bottom-[-5%] right-[-5%] w-[40%] h-[40%] bg-soft-teal/10 blur-[120px] rounded-full" style={{ animation: 'float 10s infinite' }} />
-                <div className="absolute top-[30%] right-[10%] w-[20%] h-[20%] bg-sky-blue/5 blur-[100px] rounded-full" />
             </div>
 
-            {/* --- SIDEBAR (Desktop) --- */}
-            <aside className="hidden md:flex flex-col w-72 bg-white/[0.02] border-r border-white/5 backdrop-blur-3xl relative z-20">
-                <div className="p-6 mb-2">
+            {/* --- САЙДБАР (Desktop) --- */}
+            <aside className="hidden md:flex flex-col w-80 bg-white/[0.01] border-r border-white/5 backdrop-blur-3xl relative z-20">
+                <div className="p-6">
                     <div className="flex items-center gap-3 group transition-transform duration-300 hover:scale-[1.02]">
                         <img 
                             src="/cover2.png" 
                             alt="Logo" 
-                            className="w-9 h-9 rounded-xl object-cover shadow-[0_0_20px_rgba(38,208,206,0.3)]" 
+                            className="w-10 h-10 rounded-2xl object-cover shadow-[0_0_20px_rgba(38,208,206,0.3)]" 
                         />
                         <div className="text-xl font-bold bg-gradient-accent bg-clip-text text-transparent tracking-tighter uppercase text-white">
                             MindFlow
                         </div>
                     </div>
                 </div>
-                <div className="flex-1 overflow-y-auto no-scrollbar px-3">
+
+                {/* Список агентов с плавным скроллом */}
+                <div className="flex-1 overflow-y-auto no-scrollbar px-4 space-y-2 pb-24">
                     <ChatSidebar
                         agents={agents}
                         selectedAgentId={selectedAgentId}
                         onSelectAgent={selectAgent}
                     />
                 </div>
+
+                {/* Плавающая кнопка создания агента */}
+                <div className="absolute bottom-6 left-0 right-0 px-6">
+                    <button className="w-full h-14 bg-gradient-to-r from-bright-turquoise to-soft-teal rounded-2xl flex items-center justify-center gap-3 text-deep-midnight font-bold shadow-lg shadow-bright-turquoise/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 group">
+                        <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                        <span>Новый агент</span>
+                    </button>
+                </div>
             </aside>
 
-            {/* --- MAIN CHAT AREA --- */}
+            {/* --- ОСНОВНАЯ ОБЛАСТЬ ЧАТА --- */}
             <main className="flex-1 flex flex-col overflow-hidden relative z-10">
                 
-                {/* HEADER */}
+                {/* ХЕДЕР */}
                 <header className="h-20 flex items-center justify-between px-8 border-b border-white/5 glass-panel shrink-0">
                     <div className="flex items-center gap-5">
                         <button
@@ -207,94 +220,104 @@ export const Chat = () => {
 
                         <div className="flex items-center gap-4 animate-slide-up">
                             <div className="relative group">
-                                <div className="w-11 h-11 bg-gradient-primary rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg border border-white/10 group-hover:shadow-bright-turquoise/20 transition-all">
-                                    {currentAgent ? currentAgent.name[0] : 'M'}
+                                <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg border border-white/10 group-hover:shadow-bright-turquoise/20 transition-all">
+                                    {currentAgent ? currentAgent.name[0] : 'М'}
                                 </div>
                                 {currentAgent?.isActive && (
-                                    <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-light-mint rounded-full border-2 border-deep-midnight animate-pulse" />
+                                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-light-mint rounded-full border-2 border-deep-midnight animate-pulse" />
                                 )}
                             </div>
 
                             <div>
                                 <h1 className="text-white font-semibold tracking-tight text-lg leading-none mb-1">
-                                    {currentAgent ? currentAgent.name : 'System Stream'}
+                                    {currentAgent ? currentAgent.name : 'Системный поток'}
                                 </h1>
                                 <span className="text-[10px] uppercase tracking-[0.2em] text-bright-turquoise/60 font-medium">
-                                    {currentAgent?.isActive ? 'Connection Active' : 'Waiting for link'}
+                                    {currentAgent?.isActive ? 'Соединение активно' : 'Ожидание канала связи'}
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    <button className="w-10 h-10 flex items-center justify-center rounded-xl text-white/30 hover:text-white hover:bg-white/5 transition-all">
+                    {/* Кнопка "Три точки" с анимацией */}
+                    <button className="w-11 h-11 flex items-center justify-center rounded-2xl text-white/40 hover:text-white hover:bg-white/10 hover:scale-110 active:scale-90 transition-all duration-200 border border-transparent hover:border-white/10">
                         <MoreVertical className="w-5 h-5" />
                     </button>
                 </header>
 
-                {/* MESSAGES AREA */}
+                {/* ОБЛАСТЬ СООБЩЕНИЙ */}
                 <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth px-6 py-10 flex flex-col gap-6">
                     <MessageList messages={messages} />
                     
+                    {/* Пустое состояние (Логотип на весь квадратик) */}
                     {messages.length === 0 && (
-                        <div className="flex-1 flex flex-col items-center justify-center animate-pulse">
-                            <div className="w-16 h-16 rounded-3xl bg-white/[0.03] flex items-center justify-center mb-4 border border-white/5">
-                                <img src="/cover2.png" alt="Logo" className="w-8 h-8 opacity-20 grayscale" />
+                        <div className="flex-1 flex flex-col items-center justify-center">
+                            <div className="group relative">
+                                {/* Светящийся фон для логотипа */}
+                                <div className="absolute inset-0 bg-bright-turquoise/20 blur-3xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-700" />
+                                
+                                <div className="w-32 h-32 rounded-[40px] bg-white/[0.03] flex items-center justify-center mb-6 border border-white/5 overflow-hidden relative z-10">
+                                    <img 
+                                        src="/cover2.png" 
+                                        alt="Logo" 
+                                        className="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" 
+                                    />
+                                </div>
                             </div>
-                            <p className="text-white/20 font-mono text-[10px] tracking-[0.3em] uppercase">
-                                System ready for input
+                            <p className="text-white/20 font-mono text-[11px] tracking-[0.4em] uppercase animate-pulse">
+                                Система готова к вводу
                             </p>
                         </div>
                     )}
                 </div>
 
-                {/* INPUT AREA */}
+                {/* ОБЛАСТЬ ВВОДА */}
                 <div className="p-6 md:p-10 bg-gradient-to-t from-deep-midnight via-deep-midnight/90 to-transparent">
                     <form 
                         onSubmit={handleSend} 
-                        className="max-w-4xl mx-auto flex items-end gap-3 p-2 rounded-[24px] bg-white/[0.03] border border-white/5 backdrop-blur-2xl focus-within:border-bright-turquoise/30 transition-all duration-500 shadow-2xl"
+                        className="max-w-4xl mx-auto flex items-end gap-3 p-2 rounded-[32px] bg-white/[0.03] border border-white/5 backdrop-blur-3xl focus-within:border-bright-turquoise/30 transition-all duration-500 shadow-2xl"
                     >
                         <div className="flex-1">
                             <Input
-                                placeholder={selectedAgentId ? "Type your message..." : "Select an agent to begin..."}
+                                placeholder={selectedAgentId ? "Введите ваше сообщение..." : "Выберите агента для начала связи..."}
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 disabled={!selectedAgentId}
-                                className="bg-transparent border-none shadow-none focus:ring-0 text-white placeholder:text-white/20 py-4 px-4"
+                                className="bg-transparent border-none shadow-none focus:ring-0 text-white placeholder:text-white/10 py-5 px-6 text-lg"
                             />
                         </div>
 
                         <Button
                             variant="gradient"
                             type="submit"
-                            // disabled={!selectedAgentId || !inputValue.trim()}
-                            className="h-12 w-12 md:w-auto md:px-6 rounded-[16px] flex items-center justify-center gap-2 group overflow-hidden relative"
+                            className="h-14 px-8 rounded-3xl flex items-center justify-center gap-3 group overflow-hidden relative active:scale-95 transition-transform"
                         >
-                            <span className="hidden md:inline font-bold tracking-tighter uppercase text-sm">Send</span>
-                            <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                            <span className="hidden md:inline font-bold tracking-tighter uppercase text-sm">Отправить</span>
+                            <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </Button>
                     </form>
                     
-                    <div className="mt-4 flex justify-center items-center gap-4">
-                        <div className="h-[1px] w-8 bg-white/5" />
-                            <span className="text-[9px] font-mono text-white/10 tracking-[0.4em] uppercase">
-                                MindFlow Neural Link v1.0
-                            </span>
-                        <div className="h-[1px] w-8 bg-white/5" />
+                    <div className="mt-6 flex justify-center items-center gap-6">
+                        <div className="h-[1px] w-12 bg-white/5" />
+                        <span className="text-[10px] font-mono text-white/10 tracking-[0.5em] uppercase">
+                            Нейронная связь MindFlow v1.0
+                        </span>
+                        <div className="h-[1px] w-12 bg-white/5" />
                     </div>
                 </div>
 
             </main>
 
-            {/* MOBILE SIDEBAR OVERLAY */}
+            {/* МОБИЛЬНЫЙ САЙДБАР */}
             {isSidebarOpen && (
-                <div className="fixed inset-0 z-[100] md:hidden animate-scale-in">
-                    <div className="absolute inset-0 bg-deep-midnight/60 backdrop-blur-md" onClick={() => setIsSidebarOpen(false)} />
-                    <nav className="absolute top-0 left-0 bottom-0 w-72 bg-deep-midnight border-r border-white/10 p-6 flex flex-col shadow-2xl">
-                        <div className="flex items-center justify-between mb-8">
-                            <div className="text-lg font-bold bg-gradient-accent bg-clip-text text-transparent uppercase tracking-tighter">
+                <div className="fixed inset-0 z-[100] md:hidden">
+                    <div className="absolute inset-0 bg-deep-midnight/80 backdrop-blur-xl" onClick={() => setIsSidebarOpen(false)} />
+                    <nav className="absolute top-0 left-0 bottom-0 w-80 bg-deep-midnight border-r border-white/10 p-6 flex flex-col shadow-2xl animate-slide-up">
+                        <div className="flex items-center justify-between mb-10">
+                            <div className="text-xl font-bold bg-gradient-accent bg-clip-text text-transparent uppercase tracking-tighter">
                                 MindFlow
                             </div>
-                            <button onClick={() => setIsSidebarOpen(false)} className="text-white/40"><X /></button>
+                            <button onClick={() => setIsSidebarOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-white/40"><X /></button>
                         </div>
                         <div className="flex-1 overflow-y-auto no-scrollbar">
                             <ChatSidebar
@@ -303,6 +326,10 @@ export const Chat = () => {
                                 onSelectAgent={(id) => { selectAgent(id); setIsSidebarOpen(false); }}
                             />
                         </div>
+                        <button className="mt-4 w-full h-14 bg-gradient-to-r from-bright-turquoise to-soft-teal rounded-2xl text-deep-midnight font-bold flex items-center justify-center gap-2">
+                            <Plus className="w-5 h-5" />
+                            <span>Создать агента</span>
+                        </button>
                     </nav>
                 </div>
             )}
