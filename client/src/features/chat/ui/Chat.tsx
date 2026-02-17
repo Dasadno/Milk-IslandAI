@@ -108,6 +108,17 @@ import { ChatSidebar, MessageList } from '../../../widgets';
 import { Button } from '@/shared/ui/Button';
 import Input from '@/shared/ui/Input';
 
+const getAgentColor = (id: string) => {
+    if (!id) return '#26d0ce'; // Дефолтный бирюзовый для общего потока
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+        hash = id.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash % 360);
+    // Возвращаем HSL: насыщенность 75%, яркость 65% для неона
+    return `hsl(${hue}, 75%, 65%)`;
+};
+
 export const Chat = () => {
     const {
         agents,
@@ -299,3 +310,16 @@ export const Chat = () => {
         </div>
     );
 };
+
+
+
+// const getAgentColor = (id: string) => {
+//     if (!id) return '#26d0ce'; // Стандартный бирюзовый
+//     let hash = 0;
+//     for (let i = 0; i < id.length; i++) {
+//         hash = id.charCodeAt(i) + ((hash << 5) - hash);
+//     }
+//     // Используем HSL для сочных неоновых цветов
+//     const hue = Math.abs(hash % 360);
+//     return `hsl(${hue}, 85%, 65%)`;
+// };
