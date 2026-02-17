@@ -239,6 +239,24 @@ Base URL: `http://localhost:8080` (no `/api/v1` prefix — routes are at root le
 | `DELETE` | `/control/agents/{id}` | Done | Remove agent (soft delete) | `{ "success": true, "message": "agent deactivated" }` |
 | `POST` | `/control/reset` | TODO | Reset world state | Request: `{ "confirm": true, "preserveAgents": false }` |
 
+### How requests should look 
+
+*Create new agent* `/control/spawn`
+```json 
+{
+  "name": "Mark",
+  "personality": {
+    "openness": 0.8,
+    "conscientiousness": 0.5,
+    "extraversion": 1.0,
+    "agreeableness": 0.3,
+    "neuroticism": 0.5,
+    "coreValues": ["curiosity", "freedom"],
+    "quirks": ["loves girls with name Eve"]
+  },
+  "state": "idle"
+}
+```
 ---
 
 ## Response Schemas
