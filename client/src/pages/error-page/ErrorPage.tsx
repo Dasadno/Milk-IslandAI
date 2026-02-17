@@ -7,7 +7,6 @@ const ErrorPage = () => {
     const navigate = useNavigate();
     const error = useRouteError();
 
-    // Полезно для отладки: посмотрим в консоли, что за объект ошибки пришел
     useEffect(() => {
         console.error('ErrorPage caught an error:', error);
     }, [error]);
@@ -26,7 +25,6 @@ const ErrorPage = () => {
             title: 'Доступ запрещен',
             desc: <>Ваши нейронные ключи не подходят к этому сектору.<br />Протокол безопасности активен.</>
         }
-        // ... остальные ошибки без изменений
     };
 
     // --- 2. Улучшенная логика определения ---
@@ -34,16 +32,13 @@ const ErrorPage = () => {
     let technicalDetails = 'Unknown system anomaly.';
 
     if (isRouteErrorResponse(error)) {
-        // Это стандартные ошибки роутинга (404, 401 и т.д.)
         errorCode = error.status.toString();
         technicalDetails = error.statusText || error.data?.message || 'Route Error';
     } else if (error && typeof error === 'object') {
-        // Если это не RouteResponse, но у объекта есть статус (бывает при некоторых fetch-ошибках)
         if ('status' in error && typeof error.status === 'number') {
             errorCode = error.status.toString();
         }
         
-        // Достаем сообщение
         if ('message' in error && typeof error.message === 'string') {
             technicalDetails = error.message;
         } else if ('data' in error && typeof error.data === 'string') {
@@ -53,8 +48,6 @@ const ErrorPage = () => {
         technicalDetails = error;
     }
 
-    // Специальная проверка: если страница не найдена, но errorCode почему-то остался 500
-    // (Иногда лоадеры выбрасывают ошибки, которые мы хотим трактовать как 404)
     if (technicalDetails.toLowerCase().includes('not found')) {
         errorCode = '404';
     }
