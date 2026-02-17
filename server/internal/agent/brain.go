@@ -92,10 +92,10 @@ func NewBrain(personality *Personality) *Brain {
 	creativity := 0.5 + personality.Openness*0.5 // 0.5–1.0
 	return &Brain{
 		Personality:   personality,
-		ThoughtBuffer: make([]Thought, 0, 5),
-		ThoughtStream: make(chan Thought, 16),
+		ThoughtBuffer: make([]Thought, 0, 20),
+		ThoughtStream: make(chan Thought, 50),
 		Config: BrainConfig{
-			MaxThoughts:      5,
+			MaxThoughts:      10,
 			CreativityFactor: creativity,
 			ResponseTimeout:  5 * time.Minute,
 		},
@@ -105,7 +105,7 @@ func NewBrain(personality *Personality) *Brain {
 // BuildSystemPrompt строит системный промпт из личности агента.
 func BuildSystemPrompt(name string, p *Personality, mood Mood, goals []Goal) string {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("Ты русский %s, разговаривай только на русском\n\n", name))
+	sb.WriteString(fmt.Sprintf("IMPORTANT: ТЫ РУССКИЙ %s, РАЗГОВАРИВАЙ ТОЛЬКО НА РУССКОМ ЯЗЫКЕ \n\n", name))
 	sb.WriteString(fmt.Sprintf("You are %s, an autonomous AI agent in a social simulation.\n\n ", name))
 
 	sb.WriteString("Your personality:\n")
@@ -153,7 +153,7 @@ func BuildSystemPrompt(name string, p *Personality, mood Mood, goals []Goal) str
 		}
 	}
 
-	sb.WriteString("\nIMPORTANT: Keep responses concise (2-3 sentences max). Stay in character. Be natural and conversational.")
+	sb.WriteString("\nIMPORTANT: Keep responses concise (2-3 sentences max). Stay in character. Be natural and conversational. РАЗГОВАРИВАЙ ПО РУССКИ")
 
 	return sb.String()
 }
