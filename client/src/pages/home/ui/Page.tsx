@@ -1,7 +1,9 @@
 import { Navbar } from '@/widgets';
 import { Footer } from '@/shared/ui/Footer';
+import { useNavigate } from 'react-router-dom';
 
 export const HomePage = () => {
+    const navigate = useNavigate();
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
 
@@ -39,7 +41,9 @@ export const HomePage = () => {
                     </p>
 
                     <div className="flex flex-wrap justify-center gap-6">
-                        <button className="bg-gradient-primary text-white px-12 py-5 rounded-2xl font-black text-xl shadow-[0_10px_40px_rgba(38,208,206,0.4)] hover:shadow-[0_15px_50px_rgba(38,208,206,0.6)] hover:-translate-y-1 transition-all border border-white/20">
+                        <button 
+                        onClick={() => navigate('/chat')}
+                        className="bg-gradient-primary text-white px-12 py-5 rounded-2xl font-black text-xl shadow-[0_10px_40px_rgba(38,208,206,0.4)] hover:shadow-[0_15px_50px_rgba(38,208,206,0.6)] hover:-translate-y-1 transition-all border border-white/20">
                             Начать исследование
                         </button>
                     </div>
@@ -155,7 +159,7 @@ export const HomePage = () => {
 
                     {/* Блок с репозиторием */}
                     <a
-                        href="https://github.com/Dasadno/Milk-IslandAI"
+                        href="https://github.com/Dasadno/MindFlow"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[10px] font-bold bg-deep-midnight text-white px-4 py-2 rounded-lg text-center uppercase tracking-widest">
@@ -176,7 +180,7 @@ export const HomePage = () => {
                     </p>
 
                     <a
-                        href="https://github.com/Dasadno/Milk-IslandAI"
+                        href="https://github.com/Dasadno/MindFlow"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-block bg-gradient-accent text-white px-12 py-5 rounded-2xl font-black text-xl shadow-xl hover:shadow-[0_0_30px_rgba(122,248,196,0.4)] hover:-translate-y-1 transition-all border border-white/20"

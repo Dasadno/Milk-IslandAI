@@ -65,7 +65,7 @@ export const Navbar = () => {
                 </a>
 
                 {/* Ссылка: GitHub */}
-                <a href="https://github.com/Dasadno/Milk-IslandAI" target="_blank" rel="noopener noreferrer" className="group relative px-4 py-2 overflow-hidden rounded-lg transition-all hover:bg-white/5">
+                <a href="https://github.com/Dasadno/MindFlow" target="_blank" rel="noopener noreferrer" className="group relative px-4 py-2 overflow-hidden rounded-lg transition-all hover:bg-white/5">
                     <span className="relative z-10 transition-all duration-300 group-hover:text-bright-turquoise group-hover:drop-shadow-[0_0_10px_rgba(38,208,206,0.8)]">
                         GitHub
                     </span>
