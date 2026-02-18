@@ -63,7 +63,7 @@
 //                             transition-all
 //                             border-l-4
 //                             hover:bg-deep-midnight/50
-                            
+
 //                             /* Активный агент выделяется */
 //                             ${agent.id === selectedAgentId
 //                                 ? 'border-bright-turquoise bg-deep-midnight/30'
@@ -119,6 +119,8 @@
 
 import type { AgentSummary } from '../shared/types';
 import { Plus, Radio } from 'lucide-react';
+import { useState } from 'react';
+import { NewAgentPopUp } from './New-Agent';
 
 interface ChatSidebarProps {
     agents: AgentSummary[];
@@ -128,6 +130,7 @@ interface ChatSidebarProps {
 }
 
 export const ChatSidebar = ({ agents, selectedAgentId, onSelectAgent, className }: ChatSidebarProps) => {
+    const [isNewAgentModalOpen, setIsNewAgentModalOpen] = useState(false);
     return (
         <aside className={`
             w-full flex flex-col h-full bg-transparent
@@ -156,8 +159,8 @@ export const ChatSidebar = ({ agents, selectedAgentId, onSelectAgent, className 
                     onClick={() => onSelectAgent('')}
                     className={`
                         group relative p-4 rounded-2xl cursor-pointer transition-all duration-300
-                        ${!selectedAgentId 
-                            ? 'bg-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/10' 
+                        ${!selectedAgentId
+                            ? 'bg-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/10'
                             : 'hover:bg-white/5 border border-transparent'}
                     `}
                 >
@@ -193,7 +196,7 @@ export const ChatSidebar = ({ agents, selectedAgentId, onSelectAgent, className 
                             <h3 className={`text-sm font-bold transition-colors ${agent.id === selectedAgentId ? 'text-bright-turquoise' : 'text-white/80'}`}>
                                 {agent.name}
                             </h3>
-                            
+
                             <div className="flex items-center gap-1.5">
                                 <div className={`
                                     w-1.5 h-1.5 rounded-full
@@ -219,13 +222,19 @@ export const ChatSidebar = ({ agents, selectedAgentId, onSelectAgent, className 
 
             {/* НИЖНЯЯ ЧАСТЬ (КНОПКА) */}
             <div className="p-6 shrink-0 mt-auto border-t border-white/5 ">
-                <button 
+                <button
+                    onClick={() => setIsNewAgentModalOpen(true)}
                     className="w-full h-14 bg-gradient-to-r from-bright-turquoise to-soft-teal rounded-2xl flex items-center justify-center gap-3 text-deep-midnight font-bold shadow-lg shadow-bright-turquoise/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 group"
                 >
                     <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                     <span>Новый агент</span>
                 </button>
             </div>
+
+            <NewAgentPopUp
+                isOpen={isNewAgentModalOpen}
+                onClose={() => setIsNewAgentModalOpen(false)}
+            />
         </aside>
     );
 };
