@@ -13,7 +13,11 @@
  * - Градиентные hover эффекты на ссылках
  */
 
+import { useNavigate } from 'react-router-dom';
+
 export const Navbar = () => {
+    const navigate = useNavigate();
+
     return (
         <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 backdrop-blur-xl bg-deep-midnight/40 border border-white/10 rounded-2xl px-8 py-4 flex justify-between items-center shadow-2xl">
             {/* ЛОГОТИП */}
@@ -49,7 +53,7 @@ export const Navbar = () => {
                 </a>
 
                 {/* Ссылка: GitHub */}
-                <a href="https://github.com/Dasadno/Milk-IslandAI" target="_blank" rel="noopener noreferrer" className="group relative px-4 py-2 overflow-hidden rounded-lg transition-all hover:bg-white/5">
+                <a href="https://github.com/Dasadno/MindFlow" target="_blank" rel="noopener noreferrer" className="group relative px-4 py-2 overflow-hidden rounded-lg transition-all hover:bg-white/5">
                     <span className="relative z-10 transition-all duration-300 group-hover:text-bright-turquoise group-hover:drop-shadow-[0_0_10px_rgba(38,208,206,0.8)]">
                         GitHub
                     </span>
@@ -58,7 +62,9 @@ export const Navbar = () => {
             </div>
 
             {/* КНОПКА CTA */}
-            <button className="bg-gradient-accent text-white px-6 py-2.5 rounded-xl text-sm font-black hover:shadow-[0_0_25px_rgba(122,248,196,0.6)] hover:scale-105 transition-all active:scale-95 border border-white/20">
+            <button 
+            onClick={() => navigate('/chat')}
+            className="bg-gradient-accent text-white px-6 py-2.5 rounded-xl text-sm font-black hover:shadow-[0_0_25px_rgba(122,248,196,0.6)] hover:scale-105 transition-all active:scale-95 border border-white/20">
                 Запустить поток
             </button>
         </nav>
