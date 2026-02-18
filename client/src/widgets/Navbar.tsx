@@ -1,10 +1,13 @@
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/features/auth/model/store';
+
 /**
  * Navbar - Навигационная панель для главной страницы
  * 
  * Компонент отображает:
  * - Логотип MindFlow
  * - Навигационные ссылки (Кто мы?, Миссия, GitHub)
- * - Кнопку "Запустить поток"
+ * - Кнопку "Запустить поток" или "Выйти" в зависимости от авторизации
  * 
  * Особенности:
  * - Фиксированная позиция вверху страницы
@@ -13,15 +16,25 @@
  * - Градиентные hover эффекты на ссылках
  */
 
-import { useNavigate } from 'react-router-dom';
-
 export const Navbar = () => {
+
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const logout = useAuthStore((state) => state.logout);
     const navigate = useNavigate();
+
+    const handleAuthAction = () => {
+        if (isAuthenticated) {
+            logout();
+            navigate('/');
+        } else {
+            navigate('/login');
+        }
+    };
 
     return (
         <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 backdrop-blur-xl bg-deep-midnight/40 border border-white/10 rounded-2xl px-8 py-4 flex justify-between items-center shadow-2xl">
             {/* ЛОГОТИП */}
-            <div className="flex items-center gap-4 cursor-pointer select-none group">
+            <div className="flex items-center gap-4 cursor-pointer select-none group" onClick={() => navigate('/')}>
                 <img
                     src="/cover2.png"
                     alt="MindFlow Logo"
@@ -67,6 +80,24 @@ export const Navbar = () => {
             className="bg-gradient-accent text-white px-6 py-2.5 rounded-xl text-sm font-black hover:shadow-[0_0_25px_rgba(122,248,196,0.6)] hover:scale-105 transition-all active:scale-95 border border-white/20">
                 Запустить поток
             </button>
+            {/* ПРАВАЯ ЧАСТЬ: АУТЕНТИФИКАЦИЯ И CTA */}
+            <div className="flex items-center gap-4">
+                {/* Кнопка Вход/Выход */}
+                <button
+                    onClick={handleAuthAction}
+                    className="hidden md:block text-sm font-bold text-white/70 hover:text-white transition-colors uppercase tracking-wider"
+                >
+                    {isAuthenticated ? 'Выйти' : 'Войти'}
+                </button>
+
+                {/* КНОПКА CTA (В Чат) */}
+                <button
+                    onClick={() => navigate('/chat')}
+                    className="bg-gradient-accent text-white px-6 py-2.5 rounded-xl text-sm font-black hover:shadow-[0_0_25px_rgba(122,248,196,0.6)] hover:scale-105 transition-all active:scale-95 border border-white/20"
+                >
+                    Запустить поток
+                </button>
+            </div>
         </nav>
     );
 };
