@@ -17,8 +17,6 @@ import (
 
 // Client — HTTP-клиент для Ollama API.
 type Client struct {
-	// Semaphore
-	sem chan struct{}
 	// BaseURL — endpoint Ollama сервера (default: http://localhost:11434).
 	BaseURL string
 
@@ -90,7 +88,6 @@ func NewClient() *Client {
 		model = "gemma3:4b"
 	}
 	return &Client{
-		sem:     make(chan struct{}, 4),
 		BaseURL: baseURL,
 		Model:   model,
 		HTTPClient: &http.Client{
