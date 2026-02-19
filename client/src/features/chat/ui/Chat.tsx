@@ -393,9 +393,8 @@ export const Chat = () => {
                         <Button
                             variant="gradient"
                             type="submit"
-                            className="h-11 md:h-14 px-4 md:px-8 rounded-2xl md:rounded-3xl flex items-center justify-center gap-3 group active:scale-95 transition-transform shrink-0"
+                            className="h-11 md:h-14 px-3 md:px-6 rounded-2xl md:rounded-3xl flex items-center justify-center gap-3 group active:scale-95 transition-transform shrink-0"
                         >
-                            <span className="hidden md:inline font-bold tracking-tighter uppercase text-sm">Отправить</span>
                             <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </Button>
                     </form>
