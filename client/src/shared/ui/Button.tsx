@@ -4,6 +4,7 @@ interface ButtonProps {
     variant?: 'primary' | 'secondary' | 'gradient' | 'accent';
     className?: string;
     type?: 'button' | 'submit' | 'reset';
+    disabled?: boolean;
 }
 
 export const Button = ({ children, onClick, variant = 'primary', className = '', type = 'button' }: ButtonProps) => {
@@ -23,6 +24,7 @@ export const Button = ({ children, onClick, variant = 'primary', className = '',
         <button
             type={type}
             onClick={onClick}
+            disabled={disabled}
             className={`${baseStyles} ${variants[variant]} ${className}`}
         >
             {children}

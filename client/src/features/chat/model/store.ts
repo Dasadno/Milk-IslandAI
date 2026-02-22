@@ -82,7 +82,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
         if (get().isConnected) return;
 
         const cleanup = chatApi.subscribeToEvents((event) => {
-            get().addMessage(event);
+            // Only store events that have actual message content.
+            // System events like 'tick', 'world_status', 'connected' etc.
+            // arrive without a speaker or content and would show as empty "Unknown" messages.
+            if (event.content && event.content.trim() !== '') {
+                get().addMessage(event);
+            }
         });
 
         set({ isConnected: true, cleanup });

@@ -10,3 +10,4 @@
 export { Button } from './Button';
 export { IconButton } from './IconButton';
 export { Footer } from './Footer';
+export { default as Input } from './Input';
