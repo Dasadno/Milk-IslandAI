@@ -6,19 +6,19 @@ Autonomous AI agents with personalities, emotions, memory, and social relationsh
 
 **Repository:** [Milk-IslandAI](https://github.com/Milk-IslandAI)
 
-## start
+## qu start
 
 ```bash
-ollama  pull gemma3:4b
+docker compose up -d 
 
-go run server/cmd/server/main.go 
-// now server on http://localhost:8080
+# ollama downloading 3gb but 1st container only 30mb 
+# you can use website after pulling 1st container on localhost:8080
 
-cd client
-npm run dev
-// now client on http://localhost:5173
+# to stop ollama
+docker compose stop ollama
+# to start ollama 
+docker compose start ollama
 
-ollama serve
 ```
 ---
 
