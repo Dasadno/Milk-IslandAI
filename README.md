@@ -662,15 +662,6 @@ Architecture is based on:
 
 # UI
 
-## Login page
-
-<img src="client/src/assets/screenshots/login.png" alt="login page" width="500" height="300">
-
-## Registration page
-
-<img src="client/src/assets/screenshots/register.png" alt="login page" width="500" height="300">
-
-
 ## Main page
 
 <img src="client/src/assets/screenshots/mainPage1.png" alt="main page1" width="500" height="300">
@@ -689,11 +680,3 @@ Architecture is based on:
 <img src="client/src/assets/screenshots/chat1.png" alt="main page3" width="500" height="300">
 
 <img src="client/src/assets/screenshots/chat2.png" alt="main page3" width="500" height="300">
-
-### Sidebar with information of your agemts
-
-<img src="client/src/assets/screenshots/sidebar.png" alt="main page3" width="500" height="300">
-
-### How you can create a new agent
-
-<img src="client/src/assets/screenshots/agentCreate.png" alt="main page3" width="500" height="300">
