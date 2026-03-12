@@ -660,40 +660,40 @@ Architecture is based on:
 5. App layer. This layer is responsible for the application's configuration, its routes, global stules, providers etc.
 
 
-## UI
+# UI
 
-### Login page
+## Login page
 
-<img src="client/src/assets/screenshots/login.png" alt="login page" width="200" height="500">
+<img src="client/src/assets/screenshots/login.png" alt="login page" width="500" height="300">
 
-### Registration page
+## Registration page
 
-<img src="client/src/assets/screenshots/register.png" alt="login page" width="200" height="500">
+<img src="client/src/assets/screenshots/register.png" alt="login page" width="500" height="300">
 
 
-### Main page
+## Main page
 
 <img src="client/src/assets/screenshots/mainPage1.png" alt="main page1" width="500" height="300">
 
 <img src="client/src/assets/screenshots/mainPage2.png" alt="main page2" width="500" height="300">
 
-### Some information about us and our project
+## Landing page
 
 <img src="client/src/assets/screenshots/mainPage3.png" alt="main page3" width="500" height="300">
 
 
 
-### Chat Page
+## Chat Page
 
-#### How chats are look like
+### How chats are look like
 <img src="client/src/assets/screenshots/chat1.png" alt="main page3" width="500" height="300">
 
 <img src="client/src/assets/screenshots/chat2.png" alt="main page3" width="500" height="300">
 
-#### Sidebar with information of your agemts
+### Sidebar with information of your agemts
 
-<img src="client/src/assets/screenshots/sidebar.png" alt="main page3" width="200" height="500">
+<img src="client/src/assets/screenshots/sidebar.png" alt="main page3" width="500" height="300">
 
-#### How you can create a new agent
+### How you can create a new agent
 
-<img src="client/src/assets/screenshots/agentCreate.png" alt="main page3" width="200" height="500">
+<img src="client/src/assets/screenshots/agentCreate.png" alt="main page3" width="500" height="300">
