@@ -662,13 +662,11 @@ Architecture is based on:
 
 # UI
 
-## Main page
+## Landing page
 
 <img src="client/src/assets/screenshots/mainPage1.png" alt="main page1" width="500" height="300">
 
 <img src="client/src/assets/screenshots/mainPage2.png" alt="main page2" width="500" height="300">
-
-## Landing page
 
 <img src="client/src/assets/screenshots/mainPage3.png" alt="main page3" width="500" height="300">
 
