@@ -501,7 +501,7 @@ export const LoginButton = () => {
 
 ## Advice for Junior Developers
 
-1. **Start with `shared/ui**` — build simple, universal components.
+1. **Start with** `shared/ui**` — build simple, universal components.
 2. **Use Storybook** — verify components in isolation.
 3. **Don't hesitate to ask** — if you're unsure where to place a component, ask for guidance.
 4. **Follow the rule:** `shared` doesn't know about business; `features` does.
