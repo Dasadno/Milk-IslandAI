@@ -1,470 +1,266 @@
-# Внесение вклада в Milk Island AI (Фронтенд)
+# Contributing to MindFlow (Frontend)
 
-Добро пожаловать! Это руководство поможет начать работу над фронтенд-разработкой.
+Welcome! This guide will help you get started with frontend development for the project.
 
-## Архитектура проекта
+## Project Architecture
 
-Мы используем **функционально-ориентированную архитектуру (Feature-Based Architecture)**. Код организован по бизнес-доменам, а не по техническим типам.
+We utilize a **Feature-Based Architecture** (inspired by Feature-Sliced Design). The code is organized by business domains rather than technical types.
 
-### Структура директорий
+### Directory Structure
 
 ```
 src/
-├── app/          # Глобальная конфигурация приложения
-├── pages/        # Страницы для роутинга (обертки)
-├── features/     # Бизнес-логика и специфичные UI
-├── shared/       # Универсальные переиспользуемые компоненты
-├── widgets/      # Крупные композитные UI-блоки
-└── entities/     # Бизнес-сущности (модели данных)
+├── app/          # Global application configuration
+├── pages/        # Routing pages (wrappers)
+├── features/     # Business logic and specific UI
+├── shared/       # Universal reusable components
+├── widgets/      # Large composite UI blocks
+└── entities/     # Business entities (data models)
+
 ```
 
-#### Детальное описание слоев
+#### Detailed Layer Description
 
-**`app/`** — Глобальная конфигурация приложения
-- `app/router/` — настройка маршрутизации (React Router)
-- `app/providers/` — глобальные провайдеры (QueryClient, AuthProvider)
-- `app/styles/` — глобальные стили
+**`app/`** — Global application configuration
 
-**`pages/`** — Компоненты-страницы для роутинга
-- Содержат **минимум логики**, только композицию компонентов
-- Пример: `pages/auth/ui/LoginPage.tsx` — просто размещает `LoginForm` на странице
-- Структура: `pages/<domain>/ui/Page.tsx`
+* `app/router/` — Routing configuration (React Router)
+* `app/providers/` — Global providers (QueryClient, AuthProvider)
+* `app/styles/` — Global styles
 
-**`features/`** — Бизнес-логика и специфичные UI-компоненты
-- Каждая фича изолирована и содержит всё необходимое для работы
-- Структура фичи:
-  ```
-  features/auth/
-  ├── ui/              # UI-компоненты специфичные для авторизации
-  │   └── LoginForm/   # Форма входа (знает про email/password)
-  ├── model/           # Бизнес-логика (хуки, стейт)
-  └── api/             # API-запросы для этой фичи
-  ```
-- **Важно**: UI в `features` — это компоненты, специфичные для данной фичи
+**`pages/`** — Page components for routing
 
-**`shared/`** — Универсальные переиспользуемые компоненты
-- Содержит код, который **НЕ знает** о бизнес-логике
-- Структура:
-  ```
-  shared/
-  ├── ui/        # Универсальные UI-компоненты (Button, Input, Card)
-  ├── api/       # Базовый API-клиент (axios instance)
-  ├── hooks/     # Универсальные хуки (useDebounce, useLocalStorage)
-  └── lib/       # Утилиты (cn, formatters, validators)
-  ```
-- **Важно**: Компоненты в `shared/ui` должны быть максимально универсальными
+* Contains **minimal logic**, focusing solely on component composition
+* Example: `pages/auth/ui/LoginPage.tsx` — simply places the `LoginForm` on the page
+* Structure: `pages/<domain>/ui/Page.tsx`
 
-**`widgets/`** — Крупные композитные UI-блоки
-- Сложные компоненты, состоящие из нескольких `shared` компонентов
-- Примеры: `Navbar`, `Sidebar`, `Footer`
-- Могут использовать компоненты из `shared`, но не из `features`
+**`features/`** — Business logic and specific UI components
 
-**`entities/`** — Бизнес-сущности
-- Модели данных (Agent, User, Relationship)
-- Типы TypeScript, схемы валидации
+* Each feature is isolated and contains everything necessary for its operation
+* Feature structure:
+```
+features/auth/
+├── ui/               # UI components specific to authentication
+│   └── LoginForm/    # Login form (aware of email/password fields)
+├── model/            # Business logic (hooks, state)
+└── api/              # API requests for this specific feature
 
-#### Почему `auth` есть и в `features`, и в `pages`?
+```
 
-**Это разные вещи:**
 
-1. **`features/auth/`** — содержит **бизнес-логику авторизации**:
-   - `features/auth/ui/LoginForm/` — форма входа (специфичный UI)
-   - `features/auth/model/` — хуки для работы с авторизацией
-   - `features/auth/api/` — запросы к API авторизации
+* **Important**: UI in `features` consists of components specific to that particular feature.
 
-2. **`pages/auth/`** — содержит **страницы-обертки** для роутинга:
-   - `pages/auth/ui/LoginPage.tsx` — просто размещает `LoginForm` на странице
-   - Минимум логики, только композиция
+**`shared/`** — Universal reusable components
 
-**Аналогия:** `features` — это "кирпичики" с логикой, `pages` — это "стены", которые собираются из кирпичиков.
+* Contains code that **DOES NOT** know about business logic
+* Structure:
+```
+shared/
+├── ui/        # Universal UI components (Button, Input, Card)
+├── api/       # Base API client (axios instance)
+├── hooks/     # Universal hooks (useDebounce, useLocalStorage)
+└── lib/       # Utilities (cn, formatters, validators)
 
-#### Почему в `features` есть папка `ui`, если есть `shared/ui`?
+```
 
-**Разница в назначении:**
 
-- **`shared/ui/Button`** — универсальная кнопка, не знает о бизнесе
-  ```tsx
-  // Можно использовать где угодно
-  <Button onClick={...}>Нажми меня</Button>
-  ```
+* **Important**: Components in `shared/ui` must be as universal as possible.
 
-- **`features/auth/ui/LoginForm`** — форма входа, знает про email/password
-  ```tsx
-  // Специфична для авторизации, использует shared компоненты внутри
-  <LoginForm onSubmit={handleLogin} />
-  ```
+**`widgets/`** — Large composite UI blocks
 
-**Правило:** Если компонент специфичен для одной фичи — он в `features/*/ui`. Если универсален — в `shared/ui`.
+* Complex components consisting of several `shared` or `feature` components
+* Examples: `Navbar`, `Sidebar`, `Footer`
+* Can use components from `shared`, but should avoid direct dependencies on unrelated `features` when possible.
 
-### Ключевые технологии
+**`entities/`** — Business Entities
 
-- **Vite**: Инструмент сборки.
-- **React**: Библиотека для построения пользовательских интерфейсов.
-- **Tailwind CSS**: Стилизация.
-- **Storybook**: Разработка компонентов в изолированной среде.
-- **TypeScript**: Обеспечение типобезопасности.
-- **Lucide react**: Иконки в проекте
+* Data models (Agent, User, Relationship)
+* TypeScript types, validation schemas
 
-## Цветовая палитра проекта
+#### Why is `auth` present in both `features` and `pages`?
 
-Проект использует кастомную цветовую палитру, настроенную в `tailwind.config.ts`. Все цвета доступны через Tailwind CSS классы.
+**They serve different purposes:**
 
-### 🔵 Глубокие синие (Фон и основные блоки)
+1. **`features/auth/`** — Contains the **authentication business logic**:
+* `features/auth/ui/LoginForm/` — The login form (specific UI)
+* `features/auth/model/` — Hooks for handling authentication
+* `features/auth/api/` — Authentication API requests
 
-Эти цвета создают ощущение стабильности и профессионализма.
 
-| Цвет | HEX | Tailwind класс | Назначение |
-|------|-----|----------------|------------|
-| Глубокий полночно-синий | `#0B1E3B` | `bg-deep-midnight` | Основной фон приложения |
-| Темно-синий океан | `#1A3C5E` | `bg-dark-ocean` | Карточки, вторичные элементы |
+2. **`pages/auth/`** — Contains **wrapper pages** for routing:
+* `pages/auth/ui/LoginPage.tsx` — Simply assembles the `LoginForm` on the page
+* Minimal logic, focusing on composition only
 
-**Примеры использования:**
+
+
+**Analogy:** `features` are the "bricks" containing logic; `pages` are the "walls" assembled from those bricks.
+
+#### Why is there a `ui` folder in `features` if `shared/ui` exists?
+
+**Difference in intent:**
+
+* **`shared/ui/Button`** — A universal button, unaware of the business context.
+```tsx
+// Can be used anywhere
+<Button onClick={...}>Click Me</Button>
+
+```
+
+
+* **`features/auth/ui/LoginForm`** — A login form, aware of email/password logic.
+```tsx
+// Specific to authentication, uses shared components internally
+<LoginForm onSubmit={handleLogin} />
+
+```
+
+
+
+**The Rule:** If a component is specific to one feature, it belongs in `features/*/ui`. If it is universal, it belongs in `shared/ui`.
+
+### Key Technologies
+
+* **Vite**: Build tool.
+* **React**: Library for building user interfaces.
+* **Tailwind CSS**: Styling.
+* **Storybook**: Component development in an isolated environment.
+* **TypeScript**: Ensuring type safety.
+* **Lucide React**: Project iconography.
+
+## Project Color Palette
+
+The project uses a custom color palette configured in `tailwind.config.ts`. All colors are accessible via Tailwind CSS classes.
+
+### 🔵 Deep Blues (Background and Primary Blocks)
+
+These colors evoke a sense of stability and professionalism.
+
+| Color | HEX | Tailwind Class | Purpose |
+| --- | --- | --- | --- |
+| Deep Midnight Blue | `#0B1E3B` | `bg-deep-midnight` | Main application background |
+| Dark Ocean Blue | `#1A3C5E` | `bg-dark-ocean` | Cards, secondary elements |
+
+**Usage Examples:**
 
 ```tsx
-// Основной фон приложения (уже применен в body)
+// Main app background (already applied to body)
 <div className="bg-deep-midnight">...</div>
 
-// Карточка с темным фоном
+// Card with dark background
 <div className="bg-dark-ocean rounded-lg p-6">
-  <h2 className="text-text-primary">Заголовок карточки</h2>
+  <h2 className="text-text-primary">Card Title</h2>
 </div>
+
 ```
 
-### 💎 Голубые и Циан (Акценты и активные элементы)
+### 💎 Blues and Cyans (Accents and Active Elements)
 
-Цвета из верхней части градиента логотипа, идеально подходят для кнопок и ссылок.
+Colors derived from the top of the logo gradient, ideal for buttons and links.
 
-| Цвет | HEX | Tailwind класс | Назначение |
-|------|-----|----------------|------------|
-| Яркий бирюзово-голубой | `#26D0CE` | `bg-bright-turquoise` | Основной акцентный цвет |
-| Небесно-голубой | `#5BC0EB` | `bg-sky-blue` | Иконки, второстепенные кнопки |
+| Color | HEX | Tailwind Class | Purpose |
+| --- | --- | --- | --- |
+| Bright Turquoise | `#26D0CE` | `bg-bright-turquoise` | Main accent color |
+| Sky Blue | `#5BC0EB` | `bg-sky-blue` | Icons, secondary buttons |
 
-**Примеры использования:**
+**Usage Examples:**
 
 ```tsx
-// Основная кнопка с акцентным цветом
+// Primary button with accent color
 <button className="bg-bright-turquoise hover:bg-sky-blue text-white px-6 py-3 rounded-lg transition-colors">
-  Войти
+  Login
 </button>
 
-// Ссылка с акцентным цветом
+// Link with accent color
 <a href="#" className="text-bright-turquoise hover:text-sky-blue">
-  Подробнее
+  Learn More
 </a>
 
-// Иконка с небесно-голубым цветом
+// Icon with sky blue color
 <Icon className="text-sky-blue" />
+
 ```
 
-### 🟢 Зеленые и Мятные (Процессы и "Мысли" ИИ)
+### 🟢 Greens and Mints (Processes and AI "Thoughts")
 
-Символизируют экологичность системы и успешное выполнение задач.
+Symbolize system health and successful task execution.
 
-| Цвет | HEX | Tailwind класс | Назначение |
-|------|-----|----------------|------------|
-| Светлая мята | `#7AF8C4` | `bg-light-mint` | Индикаторы "онлайн", успех |
-| Мягкий тил | `#50E3C2` | `bg-soft-teal` | Разделение чатов, выделение текста |
+| Color | HEX | Tailwind Class | Purpose |
+| --- | --- | --- | --- |
+| Light Mint | `#7AF8C4` | `bg-light-mint` | "Online" indicators, success |
+| Soft Teal | `#50E3C2` | `bg-soft-teal` | Chat separation, text highlighting |
 
-**Примеры использования:**
+**Usage Examples:**
 
 ```tsx
-// Индикатор статуса "онлайн"
+// "Online" status indicator
 <div className="flex items-center gap-2">
   <div className="w-3 h-3 bg-light-mint rounded-full"></div>
-  <span className="text-text-secondary">Онлайн</span>
+  <span className="text-text-secondary">Online</span>
 </div>
 
-// Уведомление об успехе
+// Success notification
 <div className="bg-soft-teal/20 border border-soft-teal rounded-lg p-4">
-  <p className="text-soft-teal">Агент успешно создан!</p>
+  <p className="text-soft-teal">Agent created successfully!</p>
 </div>
 
-// Выделение активного чата
+// Active chat highlight
 <div className="border-l-4 border-soft-teal bg-dark-ocean p-4">
-  <p>Активный чат</p>
+  <p>Active Chat</p>
 </div>
+
 ```
 
-### 📝 Цвета текста
+### 📝 Text Colors
 
-| Цвет | HEX | Tailwind класс | Назначение |
-|------|-----|----------------|------------|
-| Белый | `#FFFFFF` | `text-text-primary` | Заголовки, основной текст |
-| Светло-серый | `#B0BEC5` | `text-text-secondary` | Вторичный текст, описания |
+| Color | HEX | Tailwind Class | Purpose |
+| --- | --- | --- | --- |
+| White | `#FFFFFF` | `text-text-primary` | Headings, primary text |
+| Light Gray | `#B0BEC5` | `text-text-secondary` | Secondary text, descriptions |
 
-**Примеры использования:**
+**Usage Examples:**
 
 ```tsx
-// Заголовок
-<h1 className="text-text-primary text-3xl font-bold">Заголовок</h1>
+// Heading
+<h1 className="text-text-primary text-3xl font-bold">Heading</h1>
 
-// Описание
-<p className="text-text-secondary text-sm">Дополнительная информация</p>
+// Description
+<p className="text-text-secondary text-sm">Additional information</p>
+
 ```
 
-### 🎨 Градиенты
+### 🎨 Gradients
 
-Проект включает два готовых градиента:
+The project includes two ready-to-use gradients:
 
-| Название | Tailwind класс | Назначение |
-|----------|----------------|------------|
-| Основной градиент | `bg-gradient-primary` | Кнопки, акценты |
-| Акцентный градиент | `bg-gradient-accent` | Специальные элементы |
+| Name | Tailwind Class | Purpose |
+| --- | --- | --- |
+| Primary Gradient | `bg-gradient-primary` | Buttons, accents |
+| Accent Gradient | `bg-gradient-accent` | Special elements |
 
-**Примеры использования:**
+**Usage Examples:**
 
 ```tsx
-// Кнопка с градиентом (повторяет стиль фавикона)
+// Button with gradient (matches favicon style)
 <button className="bg-gradient-primary text-white px-8 py-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-shadow">
-  Создать агента
+  Create Agent
 </button>
 
-// Карточка с градиентным фоном
+// Card with gradient background
 <div className="bg-gradient-accent p-6 rounded-xl">
-  <h3 className="text-deep-midnight font-bold">Специальное предложение</h3>
+  <h3 className="text-deep-midnight font-bold">Special Offer</h3>
 </div>
 
-// Градиентный текст
+// Gradient text
 <h1 className="bg-gradient-primary bg-clip-text text-transparent text-5xl font-bold">
   Milk Island AI
 </h1>
+
 ```
 
-### 🎯 Рекомендации по использованию
+### 🎯 Usage Recommendations
 
-1. **Фон приложения**: Всегда используйте `bg-deep-midnight` (уже применен к `body`)
-2. **Карточки и блоки**: `bg-dark-ocean` для выделения контента
-3. **Кнопки**: `bg-gradient-primary` для основных действий, `bg-bright-turquoise` для второстепенных
-4. **Текст**: `text-text-primary` для заголовков, `text-text-secondary` для описаний
-5. **Статусы**: `bg-light-mint` для успеха/онлайн, `bg-soft-teal` для активных элементов
-6. **Ссылки**: `text-bright-turquoise hover:text-sky-blue`
-
-### 💡 Полный пример компонента
-
-```tsx
-export const AgentCard = ({ agent }) => {
-  return (
-    <div className="bg-dark-ocean rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-      {/* Заголовок */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-text-primary text-xl font-bold">{agent.name}</h3>
-        {/* Индикатор онлайн */}
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-light-mint rounded-full animate-pulse"></div>
-          <span className="text-text-secondary text-sm">Онлайн</span>
-        </div>
-      </div>
-      
-      {/* Описание */}
-      <p className="text-text-secondary mb-4">{agent.description}</p>
-      
-      {/* Кнопка */}
-      <button className="bg-gradient-primary text-white px-6 py-2 rounded-lg hover:shadow-lg transition-shadow w-full">
-        Открыть чат
-      </button>
-    </div>
-  );
-};
-```
-
-
-## Как начать новую задачу
-
-### 1. Разработка изолированного компонента (Рекомендуется для начинающих)
-
-Если нужно создать UI-компонент (например, "Карточка пользователя"):
-
-1.  Запустите `npm run storybook`.
-2.  Создайте файл компонента в `src/shared/ui/UserCard/UserCard.tsx`.
-3.  Создайте файл истории (story) в `src/shared/ui/UserCard/UserCard.stories.tsx`.
-4.  Разработайте компонент и проверьте, как он выглядит в Storybook.
-5.  После завершения вы можете использовать его в основном приложении.
-
-### 2. Работа над функциональностью
-
-Если нужно реализовать определенную функцию (например, "Форма входа"):
-
-1.  Создайте папку `src/features/auth`.
-2.  Разместите компоненты внутри `src/features/auth/ui`.
-3.  Добавьте логику (хуки, вызовы API) в `src/features/auth/model`.
-
-## Команды
-
-- `npm run dev`: Запуск основного приложения.
-- `npm run storybook`: Запуск Storybook.
-- `npm run lint`: Проверка кода на наличие ошибок и соответствие стандартам.
-
-## Практические примеры
-
-### Пример 1: Создание универсальной кнопки
-
-**Задача:** Создать переиспользуемую кнопку.
-
-**Решение:** Размещаем в `shared/ui/Button/`
-
-```tsx
-// shared/ui/Button/Button.tsx
-interface ButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  variant?: 'primary' | 'secondary';
-}
-
-export const Button = ({ children, onClick, variant = 'primary' }: ButtonProps) => {
-  return (
-    <button onClick={onClick} className={/* стили */}>
-      {children}
-    </button>
-  );
-};
-```
-
-**Почему `shared`?** Кнопка универсальна, не знает о бизнес-логике.
-
-### Пример 2: Создание формы регистрации агента
-
-**Задача:** Создать форму для регистрации нового AI-агента.
-
-**Решение:** Размещаем в `features/agent-management/ui/CreateAgentForm/`
-
-```tsx
-// features/agent-management/ui/CreateAgentForm/CreateAgentForm.tsx
-import { Button } from '@/shared/ui/Button/Button';
-import { Input } from '@/shared/ui/Input/Input';
-
-export const CreateAgentForm = () => {
-  // Логика специфична для создания агента
-  const [name, setName] = useState('');
-  const [personality, setPersonality] = useState({});
-  
-  return (
-    <form>
-      <Input value={name} onChange={setName} />
-      {/* Специфичные поля для агента */}
-      <Button>Создать агента</Button>
-    </form>
-  );
-};
-```
-
-**Почему `features`?** Форма знает про структуру агента, использует API агентов.
-
-### Пример 3: Создание страницы списка агентов
-
-**Задача:** Создать страницу со списком всех агентов.
-
-**Решение:** 
-1. Создаем фичу: `features/agent-list/ui/AgentList/`
-2. Создаем страницу: `pages/agents/ui/AgentsPage.tsx`
-
-```tsx
-// features/agent-list/ui/AgentList/AgentList.tsx
-export const AgentList = () => {
-  const agents = useAgents(); // хук из features/agent-list/model/
-  return (
-    <div>
-      {agents.map(agent => <AgentCard key={agent.id} agent={agent} />)}
-    </div>
-  );
-};
-
-// pages/agents/ui/AgentsPage.tsx
-import { AgentList } from '@/features/agent-list/ui/AgentList/AgentList';
-
-export const AgentsPage = () => {
-  return (
-    <div className="container">
-      <h1>Все агенты</h1>
-      <AgentList />
-    </div>
-  );
-};
-```
-
-**Почему так?** `AgentList` — фича с логикой, `AgentsPage` — обертка для роутинга.
-
-## Правила принятия решений
-
-### Куда поместить компонент?
-
-**Задайте себе вопросы:**
-
-1. **Компонент универсален и может использоваться где угодно?**
-   - ✅ Да → `shared/ui/`
-   - ❌ Нет → идем дальше
-
-2. **Компонент специфичен для одной бизнес-фичи?**
-   - ✅ Да → `features/<feature-name>/ui/`
-   - ❌ Нет → идем дальше
-
-3. **Компонент — это большой композитный блок (Navbar, Sidebar)?**
-   - ✅ Да → `widgets/`
-   - ❌ Нет → идем дальше
-
-4. **Компонент — это страница для роутинга?**
-   - ✅ Да → `pages/<domain>/ui/`
-
-### Куда поместить логику (хуки, функции)?
-
-1. **Логика универсальна (debounce, localStorage)?**
-   - → `shared/hooks/` или `shared/lib/`
-
-2. **Логика специфична для фичи (работа с агентами)?**
-   - → `features/<feature-name>/model/`
-
-3. **Логика — это API-запросы для фичи?**
-   - → `features/<feature-name>/api/`
-
-### Примеры правильного размещения
-
-| Компонент | Куда | Почему |
-|-----------|------|--------|
-| `Button` | `shared/ui/` | Универсальная кнопка |
-| `Input` | `shared/ui/` | Универсальное поле ввода |
-| `LoginForm` | `features/auth/ui/` | Специфична для авторизации |
-| `AgentCard` | `features/agent-list/ui/` | Знает структуру агента |
-| `Navbar` | `widgets/` | Большой композитный блок |
-| `HomePage` | `pages/home/ui/` | Страница для роутинга |
-| `useDebounce` | `shared/hooks/` | Универсальный хук |
-| `useAuth` | `features/auth/model/` | Логика авторизации |
-
-## Частые ошибки
-
-### ❌ Неправильно
-
-```tsx
-// shared/ui/LoginButton/LoginButton.tsx
-export const LoginButton = () => {
-  const { login } = useAuth(); // Знает про авторизацию!
-  return <button onClick={login}>Войти</button>;
-};
-```
-
-**Проблема:** Компонент в `shared` знает про бизнес-логику (авторизацию).
-
-### ✅ Правильно
-
-```tsx
-// shared/ui/Button/Button.tsx
-export const Button = ({ onClick, children }) => {
-  return <button onClick={onClick}>{children}</button>;
-};
-
-// features/auth/ui/LoginButton/LoginButton.tsx
-import { Button } from '@/shared/ui/Button/Button';
-
-export const LoginButton = () => {
-  const { login } = useAuth();
-  return <Button onClick={login}>Войти</Button>;
-};
-```
-
-**Решение:** Универсальная кнопка в `shared`, специфичная логика в `features`.
-
-## Советы для джуниоров
-
-1. **Начинайте с `shared/ui`** — создавайте простые универсальные компоненты.
-2. **Используйте Storybook** — проверяйте компоненты в изоляции.
-3. **Не бойтесь спрашивать** — если не уверены, куда поместить компонент, спросите.
-4. **Следуйте правилу:** `shared` не знает о бизнесе, `features` знает.
-5. **Изучайте существующий код** — смотрите, как организованы другие фичи.
+1. **App Background**: Always use `bg-deep-midnight` (already applied to `body`).
+2. **Cards and Blocks**: `bg-dark-ocean` for content separation.
+3. **Buttons**: `bg-gradient-primary` for primary actions, `bg-bright-turquoise` for secondary.
+4. **Text**: `text-text-primary` for headings, `text-text-secondary` for descriptions.
+5. **Statuses**: `bg-light-mint` for success/online, `bg-soft-teal` for active elements.
+6. **Links**: `text-bright-turquoise hover:text-sky-blue`.
