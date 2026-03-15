@@ -190,14 +190,6 @@ export const Chat = () => {
                             <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </Button>
                     </form>
-
-                    <div className="mt-4 md:mt-6 flex justify-center items-center gap-4 md:gap-6">
-                        <div className="h-px w-8 md:w-12 bg-white/5" />
-                        <span className="text-[8px] md:text-[10px] font-mono text-white/40 tracking-[0.3em] md:tracking-[0.5em] uppercase text-center">
-                            MindFlow v1.0 <span className="hidden md:inline">Нейронная связь</span>
-                        </span>
-                        <div className="h-px w-8 md:w-12 bg-white/5" />
-                    </div>
                 </div>
 
             </main>

@@ -41,13 +41,13 @@ export const NewAgentPopUp = ({ isOpen, onClose, onCreate }: NewAgentPopUpProps)
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-deep-midnight/80 backdrop-blur-sm transition-opacity"
+                className="absolute inset-0 bg-deep-midnight/80 transition-opacity"
                 onClick={onClose}
             />
 
             {/* Modal */}
             <div className="
-                relative w-full max-w-lg 
+                relative w-full max-w-xl
                 bg-deep-midnight 
                 border border-white/10 
                 rounded-3xl 
