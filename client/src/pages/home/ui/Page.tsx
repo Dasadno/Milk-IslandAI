@@ -7,19 +7,6 @@ export const HomePage = () => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
 
-            {/* Стили для анимаций */}
-            <style>{`
-                @keyframes float {
-                    0%, 100% { transform: translateY(0px); }
-                    50% { transform: translateY(-20px); }
-                }
-                .animate-float { animation: float 6s ease-in-out infinite; }
-                .animate-float-delayed { animation: float 6s ease-in-out 2s infinite; }
-                .animate-float-slow { animation: float 8s ease-in-out 4s infinite; }
-                html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
-                html, body { scrollbar-width: none; -ms-overflow-style: none;  }
-            `}</style>
-
             {/* Декоративные фоновые элементы */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-bright-turquoise/10 blur-[120px] rounded-full animate-pulse" />
@@ -43,9 +30,9 @@ export const HomePage = () => {
                     </p>
 
                     <div className="flex flex-wrap justify-center gap-6">
-                        <button 
-                        onClick={() => navigate('/chat')}
-                        className="bg-gradient-primary text-white px-12 py-5 rounded-2xl font-black text-xl shadow-[0_10px_40px_rgba(38,208,206,0.4)] hover:shadow-[0_15px_50px_rgba(38,208,206,0.6)] hover:-translate-y-1 transition-all border border-white/20">
+                        <button
+                            onClick={() => navigate('/chat')}
+                            className="bg-gradient-primary text-white px-12 py-5 rounded-2xl font-black text-xl shadow-[0_10px_40px_rgba(38,208,206,0.4)] hover:shadow-[0_15px_50px_rgba(38,208,206,0.6)] hover:-translate-y-1 transition-all border border-white/20">
                             Начать исследование
                         </button>
                     </div>
@@ -53,15 +40,6 @@ export const HomePage = () => {
 
                 {/* Интерактивные "кружащиеся" карточки */}
                 <div className="relative mt-24 w-full max-w-5xl h-75 hidden md:block">
-                    {/* Стили для анимаций карточек */}
-                    <style>{`
-                        @keyframes typing { from { width: 0 } to { width: 100% } }
-                        @keyframes blink { 50% { border-color: transparent } }
-                        @keyframes scan { 0% { top: 0% } 100% { top: 100% } }
-                        @keyframes pulse-text { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-                        .typing-text { overflow: hidden; white-space: nowrap; border-right: 2px solid; animation: typing 3s steps(30, end) infinite, blink .5s step-end infinite; }
-                    `}</style>
-
                     {/* Карточка 1: Агент в режиме диалога */}
                     <div className="absolute top-0 left-10 w-48 h-64 bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-6 animate-float shadow-2xl overflow-hidden">
                         <div className="w-10 h-10 rounded-full bg-bright-turquoise mb-4 shadow-[0_0_15px_rgba(38,208,206,0.5)] animate-pulse" />
@@ -113,7 +91,7 @@ export const HomePage = () => {
                         <div className="space-y-2">
                             {[1, 2, 3, 4].map((i) => (
                                 <div key={i} className="flex gap-2">
-                                    <div className="h-1 bg-sky-blue/30 rounded-full" style={{ width: `90%`, transition: 'width 2s' }} />
+                                    <div className="h-1 bg-sky-blue/30 rounded-full progress-bar-90" />
                                     <div className="h-1 bg-sky-blue/10 rounded-full flex-1" />
                                 </div>
                             ))}

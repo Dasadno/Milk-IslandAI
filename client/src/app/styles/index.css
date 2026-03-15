@@ -29,10 +29,161 @@
   --color-soft-teal: var(--color-soft-teal);
   --color-text-primary: var(--color-text-primary);
   --color-text-secondary: var(--color-text-secondary);
+
+  /* Анимации из Chat.tsx и Page.tsx */
+  --animate-slide-up: slide-up 0.4s ease-out forwards;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-delayed: float 6s ease-in-out 2s infinite;
+  --animate-float-slow: float 8s ease-in-out 4s infinite;
+  --animate-float-opacity: float-opacity 10s infinite;
+  --animate-typing: typing 3s steps(30, end) infinite, blink .5s step-end infinite;
+  --animate-scan: scan 4s linear infinite;
+  --animate-pulse-text: pulse-text 2s infinite;
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes float-opacity {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+      opacity: 0.3;
+    }
+
+    50% {
+      transform: translateY(-20px);
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes typing {
+    from {
+      width: 0
+    }
+
+    to {
+      width: 100%
+    }
+  }
+
+  @keyframes blink {
+    50% {
+      border-color: transparent
+    }
+  }
+
+  @keyframes scan {
+    0% {
+      top: 0%
+    }
+
+    100% {
+      top: 100%
+    }
+  }
+
+  @keyframes pulse-text {
+
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
 }
 
 @layer base {
   body {
-    @apply bg-deep-midnight text-text-primary antialiased; /*antialiased - for good looking font on dark theme */
+    @apply bg-deep-midnight text-text-primary antialiased;
+    /*antialiased - for good looking font on dark theme */
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+
+  html,
+  body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .glass-panel {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+    backdrop-filter: blur(20px);
+  }
+
+  .typing-text {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid;
+    animation: var(--animate-typing);
+  }
+}
+
+@layer components {
+
+  /* Компоненты для сообщений агентов */
+  .agent-message-dot {
+    background-color: var(--agent-color);
+    color: var(--agent-color);
+    box-shadow: 0 0 8px var(--agent-color);
+  }
+
+  .agent-message-name {
+    color: var(--agent-color);
+  }
+
+  .agent-message-bubble {
+    border-left-color: var(--agent-color);
+    background-color: color-mix(in srgb, var(--agent-color) 5%, transparent);
+    box-shadow: inset 0 0 20px color-mix(in srgb, var(--agent-color) 2%, transparent);
+  }
+
+  .agent-message-glow {
+    background: linear-gradient(135deg, var(--agent-color) 0%, transparent 100%);
+  }
+
+  /* Progress bar */
+  .progress-bar-90 {
+    width: 90%;
+    transition: width 2s;
   }
 }

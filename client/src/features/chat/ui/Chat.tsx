@@ -46,28 +46,10 @@ export const Chat = () => {
     return (
         <div className="flex h-screen overflow-hidden bg-deep-midnight relative selection:bg-bright-turquoise/30 selection:text-white font-sans">
 
-            <style>{`
-                @keyframes float {
-                    0%, 100% { transform: translateY(0px); opacity: 0.3; }
-                    50% { transform: translateY(-20px); opacity: 0.6; }
-                }
-                @keyframes slideUp {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
-                .no-scrollbar::-webkit-scrollbar { display: none; }
-                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-                .glass-panel {
-                    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
-                    backdrop-filter: blur(20px);
-                }
-            `}</style>
-
             {/* Фоновые градиенты */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-5%] w-[50%] h-[50%] bg-bright-turquoise/10 blur-[140px] rounded-full animate-pulse" />
-                <div className="absolute bottom-[-5%] right-[-5%] w-[40%] h-[40%] bg-soft-teal/10 blur-[120px] rounded-full" style={{ animation: 'float 10s infinite' }} />
+                <div className="absolute bottom-[-5%] right-[-5%] w-[40%] h-[40%] bg-soft-teal/10 blur-[120px] rounded-full animate-float-opacity" />
             </div>
 
             {/* --- МОБИЛЬНЫЙ OVERLAY --- */}
