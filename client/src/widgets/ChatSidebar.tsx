@@ -2,6 +2,7 @@ import type { AgentSummary } from '../shared/types';
 import { Plus, Radio } from 'lucide-react';
 import { useState } from 'react';
 import { NewAgentPopUp } from './New-Agent';
+import { AgentCard } from '@/shared/ui/AgentCard';
 
 interface ChatSidebarProps {
     agents: AgentSummary[];
@@ -63,41 +64,12 @@ export const ChatSidebar = ({ agents, selectedAgentId, onSelectAgent, className 
 
                 {/* Список AI Агентов */}
                 {agents.map((agent) => (
-                    <div
+                    <AgentCard
                         key={agent.id}
-                        onClick={() => onSelectAgent(agent.id)}
-                        className={`
-                            group relative p-4 rounded-2xl cursor-pointer transition-all duration-300 border
-                            ${agent.id === selectedAgentId
-                                ? 'bg-bright-turquoise/10 border-bright-turquoise/30 shadow-lg shadow-bright-turquoise/5'
-                                : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]'}
-                        `}
-                    >
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className={`text-sm font-bold transition-colors ${agent.id === selectedAgentId ? 'text-bright-turquoise' : 'text-white/80'}`}>
-                                {agent.name}
-                            </h3>
-
-                            <div className="flex items-center gap-1.5">
-                                <div className={`
-                                    w-1.5 h-1.5 rounded-full
-                                    ${agent.isActive ? 'bg-light-mint animate-pulse' : 'bg-white/10'}
-                                `} />
-                                <span className="text-[10px] uppercase tracking-wider opacity-40 text-white">
-                                    {agent.isActive ? 'в сети' : 'спит'}
-                                </span>
-                            </div>
-                        </div>
-
-                        <p className="text-white/40 text-xs line-clamp-1 font-light">
-                            {agent.personalityType}
-                        </p>
-
-                        {/* Индикатор активности сбоку */}
-                        {agent.id === selectedAgentId && (
-                            <div className="absolute left-[-4px] top-1/4 bottom-1/4 w-1 bg-bright-turquoise rounded-full shadow-[0_0_10px_#26d0ce]" />
-                        )}
-                    </div>
+                        agent={agent}
+                        isSelected={agent.id === selectedAgentId}
+                        onClick={onSelectAgent}
+                    />
                 ))}
             </div>
 
